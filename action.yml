@@ -1,0 +1,50 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: action
+name: 'Register build artifact'
+description: 'Creates an artifact version association with the workflow run.'
+
+inputs:
+  name:
+    description: 'Name of the artifact'
+    required: true
+  version:
+    description: 'Version of the artifact'
+    required: true
+  url:
+    description: 'Url'
+    required: true
+  digest:
+    description: 'Digest.'
+    default: false
+
+outputs:
+
+runs:
+  using: composite
+  steps:
+    - id: registerBuildArtifact
+      name: Register Build Artifact
+      uses: docker://esolang/jq:latest
+      run: |
+        # Make Platform API call to create artifact_info record
+        response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
+          -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
+          -d '{ "runId": "$CLOUDBEES_RUN_ID", "runAttempt": "$CLOUDBEES_RUN_ATTEMPT", "name": "$NAME", \
+                "url": "$URL", "version": "$VERSION", "operation": "PUBLISHED", "digest": "$DIGEST" \
+              }) || command_failed=1
+        
+        # Check curl exit code
+        if [ ${command_failed:-0} -eq 1 ];
+        then
+          echo "Platform API call failed with error: '$response'"
+          exit 1
+        fi
+      env:
+        JWT: ${{ cloudbees.api.token }}
+        NAME: ${{ inputs.name }}
+        VERSION: ${{ inputs.version }}
+        URL: ${{ inputs.url }}
+        DIGEST: ${{ inputs.digest }}
+        CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
+        CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
+
