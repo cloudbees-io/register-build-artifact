@@ -2,8 +2,6 @@
 
 Use this action to create an artifact version association with the workflow run
 
-== Prerequisites
-
 == Inputs
 
 [cols="2a,1a,1a,3a",options="header"]
@@ -44,7 +42,7 @@ In your YAML file, add:
 [source,yaml]
 ----
       - name: Inform system that an artifact version was created
-        uses: cloudbees-io/register-build-artifact-action@v1
+        uses: cloudbees-io/register-build-artifact@v1
         with:
           - name: "myApp" 
           - version: "1.0.0" 
