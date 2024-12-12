@@ -1,6 +1,6 @@
-= CloudBees action: Creates an artifact version association with the workflow run
+= CloudBees action: Inform CloudBees Platform that an artifact version was created
 
-Use this action to create an artifact version association with the workflow run
+Use this action to inform CloudBees Platform that an artifact version was created
 
 == Inputs
 
@@ -26,12 +26,12 @@ Use this action to create an artifact version association with the workflow run
 | `url`
 | String
 | Yes
-| The url.
+| The url where the artifact version is located e.g. docker.io/myapp/myimg:1.0.0.
 
 | `digest`
 | String
 | No
-| The digest.
+| The artifact digest that uniquely and immutably identifies the artifact.
 
 |===
 

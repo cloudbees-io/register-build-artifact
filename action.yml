@@ -5,16 +5,16 @@ description: 'Creates an artifact version association with the workflow run.'
 
 inputs:
   name:
-    description: 'Name of the artifact'
+    description: 'The name of the artifact.'
     required: true
   version:
-    description: 'Version of the artifact'
+    description: 'The version of the artifact.'
     required: true
   url:
-    description: 'Url'
+    description: 'The url where the artifact version is located e.g. docker.io/myapp/myimg:1.0.0.'
     required: true
   digest:
-    description: 'Digest.'
+    description: 'The artifact digest that uniquely and immutably identifies the artifact.'
     default: false
 
 runs:
@@ -30,7 +30,7 @@ runs:
         echo '"operation": "'"PUBLISHED"'", "digest": "'"$INPUT_DIGEST"'" }' >> /tmp/payload.json
 
         # Make Platform API call to create artifact_info record
-        response=$(curl --trace - --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
+        response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
           --data-binary '@/tmp/payload.json') || command_failed=1
        
