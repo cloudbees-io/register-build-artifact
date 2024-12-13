@@ -53,6 +53,7 @@ runs:
           echo "Platform API call failed with error: '$response'"
           exit 1
         fi
+        echo "Platform API call success: '$response'"
       env:
         JWT: ${{ cloudbees.api.token }}
         URL: ${{ cloudbees.api.url }}
