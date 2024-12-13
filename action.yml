@@ -51,9 +51,10 @@ runs:
         if [ ${command_failed:-0} -eq 1 ];
         then
           echo "Platform API call failed with error: '$response'"
-          exit 1
+          echo "FAILURE" >> "$GITHUB_OUTPUT"
         fi
         echo "Platform API call success: '$response'"
+        echo "SUCCESS" >> "$GITHUB_OUTPUT"
       env:
         JWT: ${{ cloudbees.api.token }}
         URL: ${{ cloudbees.api.url }}
