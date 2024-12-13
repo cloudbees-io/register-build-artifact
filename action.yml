@@ -32,14 +32,14 @@ runs:
         echo PAYLOAD:
         cat /tmp/payload.json
         echo END PAYLOAD
-        echo JWT='$JWT'
-        echo URL='$URL'
-        echo INPUT_NAME='$INPUT_NAME'
-        echo INPUT_VERSION='$INPUT_VERSION'
-        echo INPUT_URL='$INPUT_URL'
-        echo INPUT_DIGEST='$INPUT_DIGEST'
-        echo CLOUDBEES_RUN_ID='$CLOUDBEES_RUN_ID'
-        echo CLOUDBEES_RUN_ATTEMPT='$CLOUDBEES_RUN_ATTEMPT'
+        echo JWT="'"$JWT"'"
+        echo URL="'"$URL"'"
+        echo INPUT_NAME="'"$INPUT_NAME"'"
+        echo INPUT_VERSION="'"$INPUT_VERSION"'"
+        echo INPUT_URL="'"$INPUT_URL"'"
+        echo INPUT_DIGEST="'"$INPUT_DIGEST"'"
+        echo CLOUDBEES_RUN_ID="'"$CLOUDBEES_RUN_ID"'"
+        echo CLOUDBEES_RUN_ATTEMPT="'"$CLOUDBEES_RUN_ATTEMPT"'"
         
         
         # Make Platform API call to create artifact_info record
