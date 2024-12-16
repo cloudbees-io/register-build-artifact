@@ -1,0 +1,18 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: RegisterBuildArtifact
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+jobs:
+  build:
+    steps:
+      - name: Fail with missing URL
+        uses: cloudbees-io/register-build-artifact@v1
+        with:
+          name: "MyName"
+          version: "MyVersion"
+          url: ""
+          digest: ""
