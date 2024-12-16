@@ -23,6 +23,7 @@ runs:
     - id: registerBuildArtifact
       name: Register Build Artifact
       uses: docker://esolang/jq:latest
+      continue-on-error: true
       run: |
         #Create payload
         echo '{ "runId": "'"$CLOUDBEES_RUN_ID"'", "runAttempt": "'"$CLOUDBEES_RUN_ATTEMPT"'",' > /tmp/payload.json 
