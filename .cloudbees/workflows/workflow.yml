@@ -30,3 +30,10 @@ jobs:
           version: ""
           url: "docker.io/myapp/myimg:1.0.0"
           digest: ""
+      - name: Fail with missing URL
+        uses: cloudbees-io/register-build-artifact@v1
+        with:
+          name: "MyName"
+          version: "MyVersion"
+          url: ""
+          digest: ""
