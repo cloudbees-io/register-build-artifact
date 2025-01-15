@@ -15,7 +15,6 @@ inputs:
     required: true
   digest:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
-    default: false
 
 runs:
   using: composite
