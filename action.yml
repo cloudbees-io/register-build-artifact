@@ -28,7 +28,7 @@ runs:
         echo '"name": "'"$INPUT_NAME"'", "url": "'"$INPUT_URL"'", "version": "'"$INPUT_VERSION"'", ' >> /tmp/payload.json
         echo '"operation": "'"PUBLISHED"'"' >> /tmp/payload.json
         # digest argument is optional
-        if [ -n \"$INPUT_DIGEST\" ]; 
+        if [ -n "$INPUT_DIGEST" ]; 
         then
           echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
         fi
