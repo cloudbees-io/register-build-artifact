@@ -34,6 +34,10 @@ runs:
         fi
         echo ' }' >> /tmp/payload.json
 
+        echo Payload start
+        cat /tmp/payload.json
+        echo Payload end
+        
         # Make Platform API call to create artifact_info record
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
