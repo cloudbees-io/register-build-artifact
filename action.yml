@@ -15,6 +15,8 @@ inputs:
     required: true
   digest:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
+  labels:
+    description: 'List of comma separated labels.'
 
 runs:
   using: composite
@@ -31,6 +33,10 @@ runs:
         if [ -n "$INPUT_DIGEST" ]; 
         then
           echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
+        fi
+        if [ -n "INPUT_LABELS" ]; 
+        then
+          echo ', "labels": "'"$INPUT_LABELS"'"' >> /tmp/payload.json
         fi
         echo ' }' >> /tmp/payload.json
 
@@ -52,6 +58,7 @@ runs:
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_URL: ${{ inputs.url }}
         INPUT_DIGEST: ${{ inputs.digest }}
+        INPUT_LABELS: ${{ inputs.labels }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
