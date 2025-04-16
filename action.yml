@@ -34,7 +34,7 @@ runs:
         then
           echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
         fi
-        if [ -n "INPUT_LABELS" ]; 
+        if [ -n "$INPUT_LABELS" ]; 
         then
           echo ', "labels": "'"$INPUT_LABELS"'"' >> /tmp/payload.json
         fi
