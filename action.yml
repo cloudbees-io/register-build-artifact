@@ -15,6 +15,14 @@ inputs:
     required: true
   digest:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
+  repository-url:
+    description: "The clone URL of the repository."
+  commit:
+    description: "The commit ID from the source repository."
+  commit-url:
+    description: "The commit URL from the source repository."
+  ref:
+    description: "The ref or branch of the checked-out repository."
 
 runs:
   using: composite
@@ -24,16 +32,20 @@ runs:
       uses: docker://esolang/jq:latest
       run: |
         #Create payload
-        echo '{ "runId": "'"$CLOUDBEES_RUN_ID"'", "runAttempt": "'"$CLOUDBEES_RUN_ATTEMPT"'",' > /tmp/payload.json 
-        echo '"name": "'"$INPUT_NAME"'", "url": "'"$INPUT_URL"'", "version": "'"$INPUT_VERSION"'", ' >> /tmp/payload.json
-        echo '"operation": "'"PUBLISHED"'"' >> /tmp/payload.json
-        # digest argument is optional
-        if [ -n "$INPUT_DIGEST" ]; 
-        then
-          echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
-        fi
-        echo ' }' >> /tmp/payload.json
+        echo '{ "runId": "'"$CLOUDBEES_RUN_ID"'", "runAttempt": "'"$CLOUDBEES_RUN_ATTEMPT"'",' > /tmp/payload.json
+        echo '  "name": "'"$INPUT_NAME"'", "url": "'"$INPUT_URL"'", "version": "'"$INPUT_VERSION"'",' >> /tmp/payload.json
+        echo '  "operation": "'"PUBLISHED"'", "digest": "'"$INPUT_DIGEST"'"', >> /tmp/payload.json
+        echo '  "manifest" : {' >> /tmp/payload.json
+        echo '    "repository-url": "'"$INPUT_REPOSITORY_URL"'",' >> /tmp/payload.json
+        echo '    "commit-id": "'"$INPUT_COMMIT"'",' >> /tmp/payload.json
+        echo '    "commit-url": "'"$INPUT_COMMIT_URL"'",' >> /tmp/payload.json
+        echo '    "ref": "'"$INPUT_REF"'"' >> /tmp/payload.json
+        echo '  }' >> /tmp/payload.json
+        echo '}' >> /tmp/payload.json
 
+        #For debugging
+        echo 'Payload:'
+        cat /tmp/payload.json
         # Make Platform API call to create artifact_info record
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
@@ -52,6 +64,10 @@ runs:
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_URL: ${{ inputs.url }}
         INPUT_DIGEST: ${{ inputs.digest }}
+        INPUT_REPOSITORY_URL: ${{ inputs.repository-url }}
+        INPUT_COMMIT: ${{ inputs.commit }}
+        INPUT_COMMIT_URL: ${{ inputs.commit-url }}
+        INPUT_REF: ${{ inputs.ref }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
