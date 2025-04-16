@@ -36,7 +36,9 @@ runs:
         fi
         if [ -n "$INPUT_LABELS" ]; 
         then
-          echo ', "labels": "'"$INPUT_LABELS"'"' >> /tmp/payload.json
+         # Convert spaces to commas and wrap with quotes for JSON formatting
+          formatted_labels=$(echo "$INPUT_LABELS" | tr ' ' ',' | sed 's/^\(.*\)$/["\1"]/')
+          echo ', "labels": '"$formatted_labels" >> /tmp/payload.json
         fi
         echo ' }' >> /tmp/payload.json
 
