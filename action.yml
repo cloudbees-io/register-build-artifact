@@ -43,17 +43,7 @@ runs:
           formatted_list=$(echo "$INPUT_LABELS" | sed 's/\([^,]*\)/"\1"/g' | sed 's/^/[/; s/$/]/')
           echo "formatted_list = " $formatted_list
         
-          formatted_list2=$(echo "$INPUT_LABELS" | \
-            sed -e 's/[][]//g' \                # Remove existing brackets
-            -e "s/'/\"/g" \                 # Convert single to double quotes
-            | awk -v RS=, -v ORS=, '{
-              gsub(/^[ \t]+|[ \t]+$/, "");    # Trim whitespace
-              gsub(/^"|"$/, "");              # Remove existing quotes
-              printf "\"%s\"", substr($0,1,20) # Truncate & add quotes
-            }' | \
-            sed 's/,$//' | \                    # Remove trailing comma
-            sed 's/^/[/; s/$/]/')               # Wrap in brackets
-
+          formatted_list2=$(echo "$INPUT_LABELS" | sed -e 's/[][]//g' -e "s/'/\"/g" | awk -v RS=, -v ORS=, '{ gsub(/^[ \t]+|[ \t]+$/, ""); gsub(/^"|"$/, ""); printf "\"%s\"", substr($0,1,20)}' | sed 's/,$//' | sed 's/^/[/; s/$/]/')
           echo "formatted_list2 = " $formatted_list2
         
           echo ', "labels": '"$INPUT_LABELS">> /tmp/payload.json
