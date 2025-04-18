@@ -43,8 +43,8 @@ runs:
           formatted_list=$(echo "$INPUT_LABELS" | sed 's/\([^,]*\)/"\1"/g' | sed 's/^/[/; s/$/]/')
           echo "formatted_list = " $formatted_list
         
-          formatted_list2=$(echo "$INPUT_LABELS" | 
-            sed -e 's/[][]//g'                 # Remove existing brackets
+          formatted_list2=$(echo "$INPUT_LABELS" | \
+            sed -e 's/[][]//g' \                # Remove existing brackets
             -e "s/'/\"/g" \                 # Convert single to double quotes
             | awk -v RS=, -v ORS=, '{
               gsub(/^[ \t]+|[ \t]+$/, "");    # Trim whitespace
