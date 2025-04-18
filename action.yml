@@ -15,6 +15,8 @@ inputs:
     required: true
   digest:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
+  labels:
+    description: 'List of comma separated labels.'
 
 runs:
   using: composite
@@ -32,9 +34,15 @@ runs:
         then
           echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
         fi
+        if [ -n "$INPUT_LABELS" ]; 
+        then
+         # convert to JSON format
+         formatted_labels=$(echo "$INPUT_LABELS" | sed -e 's/[][]//g' -e "s/'/\"/g" | awk -v RS=, -v ORS=, '{ gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, ""); gsub(/^"+|"+$/, ""); printf "\"%s\",", $0 }' | sed 's/,$//' | sed 's/^/[/; s/$/]/')
+         echo ', "labels": '"$formatted_labels">> /tmp/payload.json
+        fi
         echo ' }' >> /tmp/payload.json
 
-        # Make Platform API call to create artifact_info record
+        # Make Platform API call to create artifact_info record 
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
           --data-binary '@/tmp/payload.json') || command_failed=1
@@ -52,6 +60,7 @@ runs:
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_URL: ${{ inputs.url }}
         INPUT_DIGEST: ${{ inputs.digest }}
+        INPUT_LABELS: ${{ inputs.labels }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
