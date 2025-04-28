@@ -42,9 +42,6 @@ runs:
         fi
         echo ' }' >> /tmp/payload.json
         
-        cat /tmp/payload.json
-        echo $formatted_labels
-
         # Make Platform API call to create artifact_info record 
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
