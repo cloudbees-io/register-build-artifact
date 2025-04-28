@@ -42,10 +42,10 @@ runs:
         fi
         echo ' }' >> /tmp/payload.json
         
-        jq_formatted_labels1=$(jq -c . <<< "$INPUT_LABELS" 2>/dev/null || jq -R 'split(",") | map(gsub("^[ \t]+|[ \t]+$"; "") | gsub("\\\""; "\\\\\\\"") | gsub("\""; "\\\""))' <<< "$INPUT_LABELS")
+        jq_formatted_labels1=$(echo "$INPUT_LABELS" | sed "s/'/\"/g" | jq -Rc '  if test("^\\s*\\[") then . else  split(",") | map(gsub("^[ \t]+|[ \t]+$"; "")) | tostring  end  ' 2>/dev/null )
         echo $jq_formatted_labels1
         
-        jq_formatted_labels2=$(jq -R -s -c 'split(",")' <<< "$INPUT_LABELS")
+        jq_formatted_labels2=$(echo "$INPUT_LABELS" | jq -R -s -c 'split(",")')
         echo $jq_formatted_labels2
   
         # Make Platform API call to create artifact_info record 
