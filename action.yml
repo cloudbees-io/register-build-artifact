@@ -41,10 +41,9 @@ runs:
          echo ', "labels": '"$formatted_labels">> /tmp/payload.json
         fi
         echo ' }' >> /tmp/payload.json
-        jqformatted_labels=$(echo "$INPUT_LABELS" | jq -R 'split(",") | map(sub("^[ \t]+|[ \t]+$"; ""))')
+        
         cat /tmp/payload.json
         echo $formatted_labels
-        echo $jqformatted_labels
 
         # Make Platform API call to create artifact_info record 
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
