@@ -37,14 +37,11 @@ runs:
         if [ -n "$INPUT_LABELS" ]; 
         then
          # convert to JSON format
-         formatted_labels=$(echo "$INPUT_LABELS" | sed -e 's/[][]//g' | awk -v RS=, -v ORS=, '{ gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, "");  gsub(/\\"/, "\\\\\""); gsub(/"/, "\\\""); printf "\"%s\",", $0 }' | sed 's/,$//' | sed 's/^/[/; s/$/]/')
+         formatted_labels=$(echo "$INPUT_LABELS" | sed -e 's/[][]//g' -e "s/'/\"/g" | awk -v RS=, -v ORS=, '{ gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, ""); gsub(/^"+|"+$/, ""); printf "\"%s\",", $0 }' | sed 's/,$//' | sed 's/^/[/; s/$/]/')
          echo ', "labels": '"$formatted_labels">> /tmp/payload.json
         fi
         echo ' }' >> /tmp/payload.json
-        
-        jq_formatted_labels1=$(echo "$INPUT_LABELS" | jq -Rc ' if test("^\\s*\\[") then . else  split(",") | map( gsub("^[ \t]+|[ \t]+$"; "") | gsub("\\\""; "\\\\\"") ) | tostring end ' 2>/dev/null)
-        echo $jq_formatted_labels1
-        
+
         # Make Platform API call to create artifact_info record 
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
