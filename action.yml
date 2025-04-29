@@ -42,9 +42,6 @@ runs:
         fi
         echo ' }' >> /tmp/payload.json
         
-        jq_formatted_labels1=$(echo "$INPUT_LABELS" | jq -Rc ' if test("^\\s*\\[") then . else  split(",") | map( gsub("^[ \t]+|[ \t]+$"; "") | gsub("\\\""; "\\\\\"") ) | tostring end ' 2>/dev/null)
-        echo $jq_formatted_labels1
-        
         # Make Platform API call to create artifact_info record 
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
