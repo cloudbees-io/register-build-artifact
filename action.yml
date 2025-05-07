@@ -15,7 +15,8 @@ inputs:
     required: true
   digest:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
-<<<<<<< HEAD
+  labels:
+    description: 'List of comma separated labels.'
   repository-url:
     description: "The clone URL of the repository."
   commit:
@@ -24,10 +25,6 @@ inputs:
     description: "The commit URL from the source repository."
   ref:
     description: "The ref or branch of the checked-out repository."
-=======
-  labels:
-    description: 'List of comma separated labels.'
->>>>>>> main
 
 runs:
   using: composite
