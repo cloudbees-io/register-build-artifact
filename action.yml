@@ -15,6 +15,7 @@ inputs:
     required: true
   digest:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
+<<<<<<< HEAD
   repository-url:
     description: "The clone URL of the repository."
   commit:
@@ -23,6 +24,10 @@ inputs:
     description: "The commit URL from the source repository."
   ref:
     description: "The ref or branch of the checked-out repository."
+=======
+  labels:
+    description: 'List of comma separated labels.'
+>>>>>>> main
 
 runs:
   using: composite
@@ -41,12 +46,27 @@ runs:
         echo '    "commit-url": "'"$INPUT_COMMIT_URL"'",' >> /tmp/payload.json
         echo '    "ref": "'"$INPUT_REF"'"' >> /tmp/payload.json
         echo '  }' >> /tmp/payload.json
-        echo '}' >> /tmp/payload.json
+
+        # digest param is optional
+        if [ -n "$INPUT_DIGEST" ]; 
+        then
+          echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
+        fi
+        
+        # labels param is optional
+        if [ -n "$INPUT_LABELS" ]; 
+        then
+         # convert to JSON format
+         formatted_labels=$(echo "$INPUT_LABELS" | sed -e 's/[][]//g' | awk -v RS=, -v ORS=, '{ gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, "");  gsub(/\\"/, "\\\\\""); gsub(/"/, "\\\""); printf "\"%s\",", $0 }' | sed 's/,$//' | sed 's/^/[/; s/$/]/')
+         echo ', "labels": '"$formatted_labels">> /tmp/payload.json
+        fi
+        echo ' }' >> /tmp/payload.json
 
         #For debugging
         echo 'Payload:'
         cat /tmp/payload.json
-        # Make Platform API call to create artifact_info record
+        
+        # Make Platform API call to create artifact_info record 
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
           -H "Authorization: Bearer $JWT" -H 'Content-Type: application/json' \
           --data-binary '@/tmp/payload.json') || command_failed=1
@@ -63,6 +83,7 @@ runs:
         INPUT_NAME: ${{ inputs.name }}
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_URL: ${{ inputs.url }}
+        INPUT_LABELS: ${{ inputs.labels }}
         INPUT_DIGEST: ${{ inputs.digest }}
         INPUT_REPOSITORY_URL: ${{ inputs.repository-url }}
         INPUT_COMMIT: ${{ inputs.commit }}
