@@ -1,6 +1,6 @@
-= CloudBees action: Inform CloudBees Platform that an artifact version was created
+= CloudBees action: Register a build artifact
 
-Use this action to inform CloudBees Platform that an artifact version was created
+Use this action to report build artifact-related data from a CloudBees platform workflow run for artifact traceability purposes.
 
 == Inputs
 
@@ -13,6 +13,21 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | Required?
 | Description
 
+| `name`
+| String
+| Yes
+| The name of the artifact to send to the CloudBees platform.
+
+| `url`
+| String
+| Yes
+| The URL where the artifact version is located.  For example, `docker.io/myapp/myimg:1.0.0`.
+
+| `version`
+| String
+| Yes
+| The version of the artifact to send to the CloudBees platform.
+
 | `digest`
 | String
 | No
@@ -23,39 +38,117 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | No
 | A comma-separated list of artifact labels.
 
-| `name`
-| String
-| Yes
-| The name of the artifact to send to the {PRODUCT} for artifact traceability purposes.
-
-| `url`
-| String
-| Yes
-| The URL where the artifact version is located.  For example, docker.io/myapp/myimg:1.0.0.
-
-| `version`
-| String
-| Yes
-| The version of the artifact to send to the {PRODUCT} for artifact traceability purposes.
-
 |===
 
-== Usage example
+== Usage examples
 
-In your YAML file, add:
+=== Basic example
+
+The following is a basic example of using the action:
 
 [source,yaml]
 ----
-      - name: Inform system that an artifact version was created
+jobs:
+  register_build_artifact:
+      uses: cloudbees-io/register-build-artifact@v1
+      with:
+        name: "myApp"
+        version: "1.0.0"
+        url: "docker.io/myapp/myimg:1.0.0"
+----
+
+=== Using optional inputs
+
+The following example specifies the artifact digest and labels:
+
+[source,yaml]
+----
+jobs:
+  register_build_artifact:
+      uses: https://github.com/cloudbees-io/register-build-artifact@v1
+      with:
+        name: "myApp"
+        version: "1.0.0"
+        url: "docker.io/myapp/myimg:1.0.0"
+        digest: "sha256:1234567890abcdefghijklmnop1234567"
+        labels: "label1,label2"
+----
+
+=== Full workflow example
+
+The following workflow example uses the action to register a build artifact to the platform.
+Then it xref:artifact-management:register-deployed-artifact.adoc[deploys the artifact] to the Docker `test` target environment and xref:evidence:publish-evidence-item.adoc[publishes evidence] to the platform.
+
+.Example platform workflow YAML file
+[.collapsible]
+--
+
+[source,yaml,role="default-expanded"]
+----
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: My workflow
+on:
+  workflow_dispatch:
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  build:
+    steps:
+      - name: Get source code
+        uses: cloudbees-io/checkout@v1
+      - id: build-go-binary
+        name: Build Go binary
+        uses: docker://golang:latest
+        run: |
+          go build -a -ldflags '-w -extldflags \"-static\"'
+        env:
+          CGO_ENABLED: "0"
+          GOOS: linux
+          GOARCH: amd64
+
+      - id: authenticate-ghcr
+        name: Authenticate to GH cloud repository
+        uses: cloudbees-io/configure-oci-credentials@v1
+        with:
+          registry: ghcr.io
+          username: MyUsername
+          password: ${{ secrets.MY_PAT }}
+
+      - id: build-container
+        name: Build container image
+        uses: cloudbees-io/kaniko@v1
+        with:
+          dockerfile: Dockerfile
+          destination: ghcr.io/MyUsername/myImage:latest
+
+      - name: Register build artifacts
         uses: cloudbees-io/register-build-artifact@v1
         with:
-          name: "myApp"
-          version: "1.0.0"
-          url: "docker.io/myapp/myimg:1.0.0"
-          digest: "sha256:5e0687d9471728b0a200e0a3840fa16466150c58f628dc6e6c40a9b07e3b3609"
-          labels: "Enter,     your labels,here!    , Thanks."
+          name: MyImage
+          version: 1.0.0
+          url: "ghcr.io/MyUsername/myImage:latest"
+  deploy:
+    steps:
+      - uses: cloudbees-io/register-deployed-artifact@v1
+        with:
+          name: MyImage
+          version: ${{ cloudbees.version }}
+          url: ghcr.io/MyUsername/myImage:${{ cloudbees.version }}
+          target-environment: test
+    needs: build
+  publish-evidence:
+    steps:
+      - name: Publish evidence
+        with:
+          content: This is evidence
+        uses: cloudbees-io/publish-evidence-item@v1
+    needs: deploy
 
 ----
+--
 
 == License
 
@@ -64,5 +157,5 @@ link:https://opensource.org/license/mit/[MIT license].
 
 == References
 
-* Learn more about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform-actions/latest/[using actions in CloudBees workflows].
-* Learn about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform/latest/[the CloudBees platform].
+* Learn more about link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/actions[using actions in CloudBees workflows].
+* Learn about link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/[the CloudBees platform].
