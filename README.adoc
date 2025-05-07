@@ -76,7 +76,7 @@ jobs:
 
 === Full workflow example
 
-The following workflow uses the action to register the build artifact to the platform.
+The following workflow example uses the action to register a build artifact to the platform.
 Then it xref:artifact-management:register-deployed-artifact.adoc[deploys the artifact] to the Docker `test` target environment and xref:evidence:publish-evidence-item.adoc[publishes evidence] to the platform.
 
 .Example platform workflow YAML file
