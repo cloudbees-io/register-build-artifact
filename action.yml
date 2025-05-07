@@ -36,7 +36,7 @@ runs:
         #Create payload
         echo '{ "runId": "'"$CLOUDBEES_RUN_ID"'", "runAttempt": "'"$CLOUDBEES_RUN_ATTEMPT"'",' > /tmp/payload.json
         echo '  "name": "'"$INPUT_NAME"'", "url": "'"$INPUT_URL"'", "version": "'"$INPUT_VERSION"'",' >> /tmp/payload.json
-        echo '  "operation": "'"PUBLISHED"'", >> /tmp/payload.json
+        echo '  "operation": "'"PUBLISHED"'",' >> /tmp/payload.json
         echo '  "manifest" : {' >> /tmp/payload.json
         echo '    "repository-url": "'"$INPUT_REPOSITORY_URL"'",' >> /tmp/payload.json
         echo '    "commit-id": "'"$INPUT_COMMIT"'",' >> /tmp/payload.json
