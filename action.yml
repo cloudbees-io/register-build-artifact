@@ -80,8 +80,8 @@ runs:
         INPUT_NAME: ${{ inputs.name }}
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_URL: ${{ inputs.url }}
-        INPUT_LABELS: ${{ inputs.labels }}
         INPUT_DIGEST: ${{ inputs.digest }}
+        INPUT_LABELS: ${{ inputs.labels }}
         INPUT_REPOSITORY_URL: ${{ inputs.repository-url }}
         INPUT_COMMIT: ${{ inputs.commit }}
         INPUT_COMMIT_URL: ${{ inputs.commit-url }}
