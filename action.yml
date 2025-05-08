@@ -16,7 +16,7 @@ inputs:
   digest:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
   labels:
-    description: 'List of comma separated labels.'
+    description: 'List of comma-separated labels.'
   repository-url:
     description: "The clone URL of the repository."
   commit:
