@@ -62,6 +62,10 @@ runs:
           echo "Platform API call failed with error: '$response'"
           exit 1
         fi
+        
+        # If successful, show the response nicely
+        echo "Response from Platform API:"
+        echo "$response" | python3 -m json.tool || echo "$response"
       env:
         JWT: ${{ cloudbees.api.token }}
         URL: ${{ cloudbees.api.url }}
