@@ -47,7 +47,7 @@ runs:
         
         # Display the generated payload
         echo "Request payload:"
-        jq . /tmp/payload.json
+        json_pp < /tmp/payload.json
         
         # Make Platform API call to create artifact_info record
         response=$(curl --silent --show-error --fail-with-body \
