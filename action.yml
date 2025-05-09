@@ -65,7 +65,7 @@ runs:
         
         # If successful, show the response nicely
         echo ""
-        echo "Response from Platform API:"
+        echo "Platform API success response:"
         echo "$response" | python3 -m json.tool || echo "$response"
       env:
         JWT: ${{ cloudbees.api.token }}
