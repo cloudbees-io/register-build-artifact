@@ -47,7 +47,7 @@ runs:
         
         # Display the generated payload
         echo "Request payload:"
-        json_pp < /tmp/payload.json
+        python3 -m json.tool /tmp/payload.json
         
         # Make Platform API call to create artifact_info record
         response=$(curl --silent --show-error --fail-with-body \
