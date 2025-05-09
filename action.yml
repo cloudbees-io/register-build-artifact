@@ -64,6 +64,7 @@ runs:
         fi
         
         # If successful, show the response nicely
+        echo ""
         echo "Response from Platform API:"
         echo "$response" | python3 -m json.tool || echo "$response"
       env:
