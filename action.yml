@@ -60,8 +60,8 @@ runs:
         echo ' }' >> /tmp/payload.json
 
         #For debugging
-        echo 'Payload:'
-        cat /tmp/payload.json
+        #echo 'Payload:'
+        #cat /tmp/payload.json
         
         # Make Platform API call to create artifact_info record 
         response=$(curl --fail-with-body  -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
