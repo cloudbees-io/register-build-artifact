@@ -20,7 +20,8 @@ inputs:
   repository-url:
     description: "The clone URL of the repository."
   commit:
-    description: "The commit ID from the source repository."
+    description: "The commit ID from the source repository. The output value of `commit` from `actions/checkout` action should be used, if checking out from a different repository or branch. Default value is `${{ cloudbees.scm.sha }}`."
+    default: "${{ cloudbees.scm.sha }}"
   commit-url:
     description: "The commit URL from the source repository."
   ref:
