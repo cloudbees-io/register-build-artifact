@@ -44,7 +44,14 @@ runs:
           echo "Provider=${{ cloudbees.scm.provider }}"
           echo "ProviderURL=${{ cloudbees.scm.provider_url }}"
           case "${{ cloudbees.scm.provider }}" in
-            github|gitlab)
+            github)
+              #for debug
+              INPUT_REPOSITORY=rich/thomas
+              INPUT_PROVIDER_URL="http://rich.org.git"
+              IFS='/'
+              set -- $INPUT_REPOSITORY
+              INPUT_COMMIT_URL="${INPUT_PROVIDER_URL%.git}/projects/$1/repos/$2/commits/${{ cloudbees.scm.sha }}"        
+            gitlab)
               INPUT_COMMIT_URL="${INPUT_REPOSITORY_URL%.git}/commit/${{ cloudbees.scm.sha }}"
               ;;
             bitbucket)
