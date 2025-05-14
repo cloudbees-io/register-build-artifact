@@ -46,7 +46,7 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | `commit`
 | String
 | No
-| The commit ID from the source repository.
+| The commit ID from the source repository. The output value of `commit` from `actions/checkout` action should be used, if checking out from a different repository or branch. Default value is `${{ cloudbees.scm.sha }}`.
 
 | `commit-url`
 | String
