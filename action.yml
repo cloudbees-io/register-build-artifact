@@ -45,13 +45,13 @@ runs:
           echo "ProviderURL=${{ cloudbees.scm.provider_url }}"
           echo "Repository=${{ cloudbees.scm.repository }}"
           case "${{ cloudbees.scm.provider }}" in
-            github|gitlab)
+            gitlab)
               INPUT_COMMIT_URL="${INPUT_REPOSITORY_URL%.git}/commit/${{ cloudbees.scm.sha }}"
               ;;
             bitbucket)
               INPUT_COMMIT_URL="${INPUT_REPOSITORY_URL%.git}/commits/${{ cloudbees.scm.sha }}"
               ;;
-            bitbucketdc)
+            github)
               INPUT_REPOSITORY="${{ cloudbees.scm.repository }}"
               INPUT_PROVIDER_URL="${{ cloudbees.scm.provider_url }}"
               IFS='/'
