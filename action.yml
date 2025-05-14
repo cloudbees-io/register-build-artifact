@@ -41,7 +41,8 @@ runs:
           INPUT_REPOSITORY_URL="${{ cloudbees.scm.repositoryUrl }}"
           # In the default case, ref is set to branch
           INPUT_REF="${{ cloudbees.scm.branch }}"
-          INPUT_COMMIT_URL="${${{ cloudbees.scm.repositoryUrl }}%.git}/commit/${{ cloudbees.scm.sha }}"
+          INPUT_COMMIT_URL="${INPUT_REPOSITORY_URL%.git}/commit/${{ cloudbees.scm.sha }}"
+          echo "Provider=${{ cloudbees.scm.provider }}"
         fi
         
         # Create the payload JSON file
