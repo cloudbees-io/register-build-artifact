@@ -19,6 +19,7 @@ inputs:
     description: 'List of comma-separated labels.'
   repository-url:
     description: "The clone URL of the repository."
+    default: "${{ cloudbees.scm.repositoryUrl }}"
   commit:
     description: "The commit ID from the source repository. The output value of `commit` from `actions/checkout` action should be used, if checking out from a different repository or branch. Default value is `${{ cloudbees.scm.sha }}`."
     default: "${{ cloudbees.scm.sha }}"
@@ -26,7 +27,8 @@ inputs:
     description: "The commit URL from the source repository."
   ref:
     description: "The ref or branch of the checked-out repository."
-
+    default: "${{ cloudbees.scm.sha }}"
+    
 runs:
   using: composite
   steps:
