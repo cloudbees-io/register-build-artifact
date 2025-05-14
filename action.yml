@@ -43,16 +43,9 @@ runs:
           INPUT_REF="${{ cloudbees.scm.branch }}"
           echo "Provider=${{ cloudbees.scm.provider }}"
           echo "ProviderURL=${{ cloudbees.scm.provider_url }}"
+          echo "Repository=${{ cloudbees.scm.repository }}"
           case "${{ cloudbees.scm.provider }}" in
-            github)
-              #for debug
-              INPUT_REPOSITORY=rich/thomas
-              INPUT_PROVIDER_URL="http://rich.org.git"
-              IFS='/'
-              set -- $INPUT_REPOSITORY
-              INPUT_COMMIT_URL="${INPUT_PROVIDER_URL%.git}/projects/$1/repos/$2/commits/${{ cloudbees.scm.sha }}"
-              ;;    
-            gitlab)
+            github|gitlab)
               INPUT_COMMIT_URL="${INPUT_REPOSITORY_URL%.git}/commit/${{ cloudbees.scm.sha }}"
               ;;
             bitbucket)
