@@ -50,6 +50,12 @@ runs:
             bitbucket)
               INPUT_COMMIT_URL="${INPUT_REPOSITORY_URL%.git}/commits/${{ cloudbees.scm.sha }}"
               ;;
+            bitbucketdc)
+              INPUT_REPOSITORY="${{ cloudbees.scm.repository }}"
+              INPUT_PROVIDER_URL="${{ cloudbees.scm.provider_url }}"
+              IFS='/' read -r -a names <<< "$INPUT_REPOSITORY"
+              INPUT_COMMIT_URL="${INPUT_PROVIDER_URL%.git}/projects/${names[0]}/repos/${names[1]}/commits/${{ cloudbees.scm.sha }}"
+              ;;
             *)
               INPUT_COMMIT_URL="Unknown"
               ;;
