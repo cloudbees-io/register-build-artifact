@@ -38,6 +38,25 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | Yes
 | The version of the artifact to send to the {PRODUCT} for artifact traceability purposes.
 
+| `repository-url`
+| String
+| No
+| The clone URL of the repository.
+
+| `commit`
+| String
+| No
+| The commit ID from the source repository. The output value of `commit` from `actions/checkout` action should be used, if checking out from a different repository or branch. Default value is `${{ cloudbees.scm.sha }}`.
+
+| `commit-url`
+| String
+| No
+| The commit URL from the source repository.
+
+| `ref`
+| String
+| No
+| The ref or branch of the checked-out repository.
 |===
 
 == Usage example
@@ -46,6 +65,9 @@ In your YAML file, add:
 
 [source,yaml]
 ----
+      - name: Checkout
+        uses: cloudbees-io/checkout@v1
+        id: checkout
       - name: Inform system that an artifact version was created
         uses: cloudbees-io/register-build-artifact@v1
         with:
@@ -54,7 +76,10 @@ In your YAML file, add:
           url: "docker.io/myapp/myimg:1.0.0"
           digest: "sha256:5e0687d9471728b0a200e0a3840fa16466150c58f628dc6e6c40a9b07e3b3609"
           labels: "Enter,     your labels,here!    , Thanks."
-
+          repository-url: ${{ steps.checkout.outputs.repository-url }}
+          commit: ${{ steps.checkout.outputs.commit }}
+          commit-url: ${{ steps.checkout.outputs.commit-url }}
+          ref: ${{ steps.checkout.outputs.ref }}
 ----
 
 == License
