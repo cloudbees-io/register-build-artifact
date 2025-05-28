@@ -40,6 +40,22 @@ Use this action to inform CloudBees Platform that an artifact version was create
 
 |===
 
+== Outputs
+
+[cols="2a,2a,5a",options="header"]
+.Output details
+|===
+
+| Output name
+| Data type
+| Description
+
+| `id`
+| String
+| The unique identifier of the artifact.
+
+|===
+
 == Usage example
 
 In your YAML file, add:

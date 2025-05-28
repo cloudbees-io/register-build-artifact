@@ -18,6 +18,11 @@ inputs:
   labels:
     description: 'List of comma separated labels.'
 
+outputs:
+  artifact-id:
+    value: ${{ steps.registerBuildArtifact.outputs.id }}
+    description: "The unique identifier of the artifact."
+
 runs:
   using: composite
   steps:
