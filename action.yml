@@ -73,7 +73,7 @@ runs:
         echo "$response" | python3 -m json.tool || echo "$response"
          
         # Extract the artifactId
-        id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
+        id=$(echo "$response" | grep -E '^id: ' | sed -E 's/^id: //')"
         
         # Set it as an output
         printf %s "${id}" > $CLOUDBEES_OUTPUTS/artifact-id
