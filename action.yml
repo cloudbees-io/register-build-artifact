@@ -40,9 +40,9 @@ runs:
          # Add the commit info if commit sha is provided
         if [ -n "$INPUT_COMMIT" ];
         then       echo ',  "commit" : {' >> /tmp/payload.json
-          echo '    "repository-url": "'"$INPUT_REPOSITORY_URL"'",' >> /tmp/payload.json
-          echo '    "commit-id": "'"$INPUT_COMMIT"'",' >> /tmp/payload.json
-          echo '    "commit-url": "'"$INPUT_COMMIT_URL"'",' >> /tmp/payload.json
+          echo '    "repositoryUrl": "'"$INPUT_REPOSITORY_URL"'",' >> /tmp/payload.json
+          echo '    "commitId": "'"$INPUT_COMMIT"'",' >> /tmp/payload.json
+          echo '    "commitUrl": "'"$INPUT_COMMIT_URL"'",' >> /tmp/payload.json
           echo '    "ref": "'"$INPUT_REF"'"' >> /tmp/payload.json
           echo '  }' >> /tmp/payload.json
         fi
