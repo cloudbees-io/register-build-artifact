@@ -74,9 +74,9 @@ runs:
          
         # Extract the artifactId
         id="$(echo "$response" | grep -E '^id: ' | sed -E 's/^id: //')"
-        
+        echo "$id"
         # Set it as an output
-        printf %s "${id}" > $CLOUDBEES_OUTPUTS/artifact-id
+        echo "$id" > $CLOUDBEES_OUTPUTS/artifact-id
 
       env:
         JWT: ${{ cloudbees.api.token }}
