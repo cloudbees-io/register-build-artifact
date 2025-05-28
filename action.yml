@@ -20,7 +20,7 @@ inputs:
 
 outputs:
   artifact-id:
-    value: ${{ steps.registerBuildArtifact.outputs.id }}
+    value: ${{ steps.registerBuildArtifact.outputs.artifact-id }}
     description: "The unique identifier of the artifact."
 
 runs:
@@ -76,7 +76,7 @@ runs:
         id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
         echo "id = $id"
         # Set it as an output
-        echo "$id" > $CLOUDBEES_OUTPUTS/artifact-id
+        printf %s "$id" > $CLOUDBEES_OUTPUTS/artifact-id
 
       env:
         JWT: ${{ cloudbees.api.token }}
