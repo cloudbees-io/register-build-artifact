@@ -77,9 +77,7 @@ runs:
         
         # Set it as an output
         printf %s "$id" > $CLOUDBEES_OUTPUTS/artifact-id
-        
-        echo "artifact-id: $CLOUDBEES_OUTPUTS/artifact-id"
-        
+
       env:
         JWT: ${{ cloudbees.api.token }}
         URL: ${{ cloudbees.api.url }}
