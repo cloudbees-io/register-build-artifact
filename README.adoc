@@ -38,7 +38,30 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | Yes
 | The version of the artifact to send to the {PRODUCT} for artifact traceability purposes.
 
+| `repository-url`
+| String
+| No
+| The clone URL of the repository.
+
+| `commit`
+| String
+| No
+| The commit ID from the source repository.
+| `commit-url`
+| String
+| No
+| The commit URL from the source repository.
+
+| `ref`
+| String
+| No
+| The ref or branch of the checked-out repository.
 |===
+
+Note: By default `repository-url`, `commit`, `commit-url` and `ref` inputs
+are not required unless checking out a different repository/branch
+from the workflow. See the second usage example below to use the outputs
+from the checkout action.
 
 == Outputs
 
@@ -58,7 +81,7 @@ Use this action to inform CloudBees Platform that an artifact version was create
 
 == Usage example
 
-In your YAML file, add:
+In your YAML file using the current workflow/branch, add:
 
 [source,yaml]
 ----
@@ -70,7 +93,27 @@ In your YAML file, add:
           url: "docker.io/myapp/myimg:1.0.0"
           digest: "sha256:5e0687d9471728b0a200e0a3840fa16466150c58f628dc6e6c40a9b07e3b3609"
           labels: "Enter,     your labels,here!    , Thanks."
+----
 
+Using the output from the checkout action, add:
+
+[source,yaml]
+----
+      - name: Checkout
+        uses: cloudbees-io/checkout@v1
+        id: checkout
+      - name: Inform system that an artifact version was created
+        uses: cloudbees-io/register-build-artifact@v1
+        with:
+          name: "myApp"
+          version: "1.0.0"
+          url: "docker.io/myapp/myimg:1.0.0"
+          digest: "sha256:5e0687d9471728b0a200e0a3840fa16466150c58f628dc6e6c40a9b07e3b3609"
+          labels: "Enter,     your labels,here!    , Thanks."
+          repository-url: ${{ steps.checkout.outputs.repository-url }}
+          commit: ${{ steps.checkout.outputs.commit }}
+          commit-url: ${{ steps.checkout.outputs.commit-url }}
+          ref: ${{ steps.checkout.outputs.ref }}
 ----
 
 == License
