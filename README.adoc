@@ -58,10 +58,10 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | The ref or branch of the checked-out repository.
 |===
 
-Note: Supplying `repository-url`,`commit`, `commit-url` and `ref` is only required if
-the checked-out repository is different from the current workflow repository/branch.
-If so, use the cloudbees-io/checkout action to return these values and pass them
-to this action. See the second usage example below.
+Note: By default `repository-url`, `commit`, `commit-url` and `ref` inputs
+are not required unless checking out a different repository/branch
+from the workflow. See the second usage example below to use the outputs
+from the checkout action.
 
 == Usage example
 
