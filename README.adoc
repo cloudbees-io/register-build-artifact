@@ -46,8 +46,7 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | `commit`
 | String
 | No
-| The commit ID from the source repository. The output value of `commit` from `actions/checkout` action should be used, if checking out from a different repository or branch. Default value is `${{ cloudbees.scm.sha }}`.
-
+| The commit ID from the source repository.
 | `commit-url`
 | String
 | No
@@ -59,9 +58,28 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | The ref or branch of the checked-out repository.
 |===
 
+Note: Supplying `repository-url`,`commit`, `commit-url` and `ref` is only required if
+the checked-out repository is different from the current workflow repository/branch.
+If so, use the cloudbees-io/checkout action to return these values and pass them
+to this action. See the second usage example below.
+
 == Usage example
 
-In your YAML file, add:
+In your YAML file using the current workflow/branch, add:
+
+[source,yaml]
+----
+      - name: Inform system that an artifact version was created
+        uses: cloudbees-io/register-build-artifact@v1
+        with:
+          name: "myApp"
+          version: "1.0.0"
+          url: "docker.io/myapp/myimg:1.0.0"
+          digest: "sha256:5e0687d9471728b0a200e0a3840fa16466150c58f628dc6e6c40a9b07e3b3609"
+          labels: "Enter,     your labels,here!    , Thanks."
+----
+
+Using the output from the checkout action, add:
 
 [source,yaml]
 ----
