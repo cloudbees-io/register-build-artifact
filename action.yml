@@ -76,7 +76,7 @@ runs:
         id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
         echo "id = $id"
         # Set it as an output
-        #echo "$id" > $CLOUDBEES_OUTPUTS/artifact-id
+        echo "$id" > $CLOUDBEES_OUTPUTS/artifact-id
 
       env:
         JWT: ${{ cloudbees.api.token }}
