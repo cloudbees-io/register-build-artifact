@@ -26,6 +26,11 @@ inputs:
   ref:
     description: "The ref or branch of the checked-out repository."
 
+outputs:
+  artifact-id:
+    value: ${{ steps.registerBuildArtifact.outputs.artifact-id }}
+    description: "The unique identifier of the artifact."
+
 runs:
   using: composite
   steps:
@@ -85,6 +90,13 @@ runs:
         echo ""
         echo "Platform API success response:"
         echo "$response" | python3 -m json.tool || echo "$response"
+         
+        # Extract the artifactId
+        id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
+        
+        # Set it as an output
+        printf %s "$id" > $CLOUDBEES_OUTPUTS/artifact-id
+
       env:
         JWT: ${{ cloudbees.api.token }}
         URL: ${{ cloudbees.api.url }}
