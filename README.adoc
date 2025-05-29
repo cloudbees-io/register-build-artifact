@@ -73,7 +73,7 @@ from the checkout action.
 | Data type
 | Description
 
-| `id`
+| `artifact-id`
 | String
 | The unique identifier of the artifact.
 
