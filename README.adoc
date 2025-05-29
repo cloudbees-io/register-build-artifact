@@ -63,6 +63,22 @@ are not required unless checking out a different repository/branch
 from the workflow. See the second usage example below to use the outputs
 from the checkout action.
 
+== Outputs
+
+[cols="2a,2a,5a",options="header"]
+.Output details
+|===
+
+| Output name
+| Data type
+| Description
+
+| `artifact-id`
+| String
+| The unique identifier of the artifact.
+
+|===
+
 == Usage example
 
 In your YAML file using the current workflow/branch, add:
