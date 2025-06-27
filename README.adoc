@@ -1,6 +1,8 @@
-= CloudBees action: Inform CloudBees Platform that an artifact version was created
+= CloudBees action: Register a build artifact
 
-Use this action to inform CloudBees Platform that an artifact version was created
+Use this action to report to the CloudBees platform that an artifact version has been created from a workflow run.
+Register a build artifact to enable traceability, including if a branch and/or repository is checked out that is different from the workflow repository branch.
+A unique artifact ID is output from using this action.
 
 == Inputs
 
@@ -13,108 +15,205 @@ Use this action to inform CloudBees Platform that an artifact version was create
 | Required?
 | Description
 
+| `name`
+| String
+| Yes
+| The name of the artifact reported to the CloudBees platform.
+
+| `url`
+| String
+| Yes
+| The URL where the artifact version is located.
+For example, `docker.io/myapp/myimg:1.0.0`.
+
+| `version`
+| String
+| Yes
+| The version of the artifact reported to the CloudBees platform.
+
+| `commit`
+| String
+| Only required if a different repository/branch from the workflow is checked out.
+| The commit ID from the source repository.
+
+| `commit-url`
+| String
+| Only required if a different repository/branch from the workflow is checked out.
+| The commit URL from the source repository.
+
+| `ref`
+| String
+| Only required if a different repository/branch from the workflow run is checked out.
+| The ref or branch of the artifact repository.
+
+| `repository-url`
+| String
+| Only required if a different repository/branch from the workflow run is checked out.
+| The artifact repository URL.
+
 | `digest`
 | String
 | No
-| The artifact digest that uniquely identifies the artifact.
+| The hash or checksum that uniquely identifies the artifact version.
 
 | `labels`
 | String
 | No
 | A comma-separated list of artifact labels.
 
-| `name`
-| String
-| Yes
-| The name of the artifact to send to the {PRODUCT} for artifact traceability purposes.
-
-| `url`
-| String
-| Yes
-| The URL where the artifact version is located.  For example, docker.io/myapp/myimg:1.0.0.
-
-| `version`
-| String
-| Yes
-| The version of the artifact to send to the {PRODUCT} for artifact traceability purposes.
-
-| `repository-url`
-| String
-| No
-| The clone URL of the repository.
-
-| `commit`
-| String
-| No
-| The commit ID from the source repository.
-| `commit-url`
-| String
-| No
-| The commit URL from the source repository.
-
-| `ref`
-| String
-| No
-| The ref or branch of the checked-out repository.
 |===
-
-Note: By default `repository-url`, `commit`, `commit-url` and `ref` inputs
-are not required unless checking out a different repository/branch
-from the workflow. See the second usage example below to use the outputs
-from the checkout action.
 
 == Outputs
 
-[cols="2a,2a,5a",options="header"]
+[cols="2a,1a,3a",options="header"]
 .Output details
 |===
-
 | Output name
 | Data type
 | Description
 
 | `artifact-id`
 | String
-| The unique identifier of the artifact.
-
+| The unique identifier of the artifact reported to the CloudBees platform.
 |===
 
-== Usage example
 
-In your YAML file using the current workflow/branch, add:
+== Usage examples
+
+=== Basic example
+
+The following is a basic example of using the action:
 
 [source,yaml]
 ----
-      - name: Inform system that an artifact version was created
-        uses: cloudbees-io/register-build-artifact@v1
-        with:
-          name: "myApp"
-          version: "1.0.0"
-          url: "docker.io/myapp/myimg:1.0.0"
-          digest: "sha256:5e0687d9471728b0a200e0a3840fa16466150c58f628dc6e6c40a9b07e3b3609"
-          labels: "Enter,     your labels,here!    , Thanks."
+jobs:
+  register_build_artifact:
+      uses: cloudbees-io/register-build-artifact@v1
+      with:
+        name: "myApp"
+        url: "docker.io/myapp/myimg:1.0.0"
+        version: "1.0.0"
+
 ----
 
-Using the output from the checkout action, add:
+=== Using the action output
+
+The following example uses the `artifact-id` output for downstream steps:
 
 [source,yaml]
 ----
       - name: Checkout
         uses: cloudbees-io/checkout@v1
         id: checkout
-      - name: Inform system that an artifact version was created
+      - name: Register an artifact with the platform
         uses: cloudbees-io/register-build-artifact@v1
         with:
           name: "myApp"
           version: "1.0.0"
           url: "docker.io/myapp/myimg:1.0.0"
-          digest: "sha256:5e0687d9471728b0a200e0a3840fa16466150c58f628dc6e6c40a9b07e3b3609"
-          labels: "Enter,     your labels,here!    , Thanks."
           repository-url: ${{ steps.checkout.outputs.repository-url }}
           commit: ${{ steps.checkout.outputs.commit }}
           commit-url: ${{ steps.checkout.outputs.commit-url }}
           ref: ${{ steps.checkout.outputs.ref }}
 ----
+
+=== Using optional inputs
+
+The following example specifies the artifact digest and labels:
+
+[source,yaml]
+----
+jobs:
+  register_build_artifact:
+      uses: https://github.com/cloudbees-io/register-build-artifact@v1
+      with:
+        name: "myApp"
+        version: "1.0.0"
+        url: "docker.io/myapp/myimg:1.0.0"
+        digest: "sha256:1234567890abcdefghijklmnop1234567"
+        labels: "label1,label2"
+----
+
+=== Full workflow example
+
+The following workflow example uses the action to register a build artifact to the platform.
+Then it xref:artifact-management:register-deployed-artifact.adoc[deploys the artifact] to the Docker `test` target environment and xref:evidence:publish-evidence-item.adoc[publishes evidence] to the platform.
+
+.Example platform workflow YAML file
+[.collapsible]
+--
+
+[source,yaml,role="default-expanded"]
+----
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: My workflow
+on:
+  workflow_dispatch:
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  build:
+    steps:
+      - name: Get source code
+        uses: cloudbees-io/checkout@v1
+      - id: build-go-binary
+        name: Build Go binary
+        uses: docker://golang:latest
+        run: |
+          go build -a -ldflags '-w -extldflags \"-static\"'
+        env:
+          CGO_ENABLED: "0"
+          GOOS: linux
+          GOARCH: amd64
+
+      - id: authenticate-ghcr
+        name: Authenticate to GitHub cloud repository
+        uses: cloudbees-io/configure-oci-credentials@v1
+        with:
+          registry: ghcr.io
+          username: MyUsername
+          password: ${{ secrets.MY_PAT }}
+
+      - id: build-container
+        name: Build container image
+        uses: cloudbees-io/kaniko@v1
+        with:
+          dockerfile: Dockerfile
+          destination: ghcr.io/MyUsername/myImage:latest
+
+      - name: Register build artifacts
+        uses: cloudbees-io/register-build-artifact@v1
+        with:
+          name: MyImage
+          version: 1.0.0
+          url: "ghcr.io/MyUsername/myImage:latest"
+          repository-url: ${{ steps.checkout.outputs.repository-url }}
+          commit: ${{ steps.checkout.outputs.commit }}
+          commit-url: ${{ steps.checkout.outputs.commit-url }}
+          ref: ${{ steps.checkout.outputs.ref }}
+          labels: "for testing, not-production"
+  deploy:
+    steps:
+      - uses: cloudbees-io/register-deployed-artifact@v1
+        with:
+          name: MyImage
+          version: ${{ cloudbees.version }}
+          url: ghcr.io/MyUsername/myImage:${{ cloudbees.version }}
+          target-environment: test
+    needs: build
+  publish-evidence:
+    steps:
+      - name: Publish evidence
+        with:
+          content: This is evidence
+        uses: cloudbees-io/publish-evidence-item@v1
+    needs: deploy
+
+----
+--
 
 == License
 
