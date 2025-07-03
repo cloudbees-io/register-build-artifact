@@ -6,7 +6,7 @@ A unique artifact ID is output from using this action.
 
 == Inputs
 
-[cols="2a,1a,1a,3a",options="header"]
+[cols="15%a,10%a,30%a,45%a",options="header"]
 .Input details
 |===
 
