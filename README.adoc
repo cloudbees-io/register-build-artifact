@@ -33,27 +33,27 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 
 | `commit`
 | String
-| Only required if a different repository/branch from the workflow is checked out.
+| Only required if a different repository/branch.^<<footnote,[1]>>^
 | The commit ID from the source repository.
 
 | `commit-url`
 | String
-| Only required if a different repository/branch from the workflow is checked out.
+| Only required if a different repository/branch.^<<footnote,[1]>>^
 | The commit URL from the source repository.
 
 | `ref`
 | String
-| Only required if a different repository/branch from the workflow run is checked out.
+| Only required if a different repository/branch.^<<footnote,[1]>>^
 | The ref or branch of the artifact repository.
 
 | `repository-url`
 | String
-| Only required if a different repository/branch from the workflow run is checked out.
+| Only required if a different repository/branch.^<<footnote,[1]>>^
 | The artifact repository URL.
 
 | `digest`
 | String
-| No
+| No, but recommended in order to track artifact versions across repositories in the link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/workflows/artifacts#history[History].
 | The hash or checksum that uniquely identifies the artifact version.
 
 | `labels`
@@ -62,6 +62,9 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 | A comma-separated list of artifact labels.
 
 |===
+[#footnote]
+^[1]^ By default, the CloudBees platform associates the artifact version with the code commit associated with the workflow run in the workflow's repository/branch. 
+If a different commit/repository/branch has been checked out for building the artifact, specify that commit ID instead.
 
 == Outputs
 
@@ -98,7 +101,7 @@ jobs:
 
 === Using the action output
 
-The following example uses the `artifact-id` output for downstream steps:
+The following example accesses the `artifact-id` value downstream using the `outputs` link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/dsl-syntax/contexts[context].
 
 [source,yaml]
 ----
@@ -109,13 +112,13 @@ The following example uses the `artifact-id` output for downstream steps:
         uses: cloudbees-io/register-build-artifact@v1
         with:
           name: "myApp"
-          version: "1.0.0"
           url: "docker.io/myapp/myimg:1.0.0"
-          repository-url: ${{ steps.checkout.outputs.repository-url }}
-          commit: ${{ steps.checkout.outputs.commit }}
-          commit-url: ${{ steps.checkout.outputs.commit-url }}
-          ref: ${{ steps.checkout.outputs.ref }}
-----
+          version: "1.0.0"
+      - name: Print output parameter artifact ID
+              uses: docker://alpine:latest
+              shell: sh
+              run: |
+                echo "artifact ID for myApp:${{ cloudbees.version }} is: ${{ steps.outputs.artifact-id)}}"
 
 === Using optional inputs
 
@@ -130,14 +133,14 @@ jobs:
         name: "myApp"
         version: "1.0.0"
         url: "docker.io/myapp/myimg:1.0.0"
-        digest: "sha256:1234567890abcdefghijklmnop1234567"
+        digest: "sha256:1234567890abcdef1234567abcdef1234"
         labels: "label1,label2"
 ----
 
 === Full workflow example
 
 The following workflow example uses the action to register a build artifact to the platform.
-Then it xref:artifact-management:register-deployed-artifact.adoc[deploys the artifact] to the Docker `test` target environment and xref:evidence:publish-evidence-item.adoc[publishes evidence] to the platform.
+Then it link:https://github.com/cloudbees-io/register-deployed-artifact[deploys the artifact] to the Docker `test` target environment and link:https://github.com/cloudbees-io/publish-evidence-item[publishes evidence] to the platform.
 
 .Example platform workflow YAML file
 [.collapsible]
