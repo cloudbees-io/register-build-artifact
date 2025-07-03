@@ -62,6 +62,7 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 | A comma-separated list of artifact labels.
 
 |===
+
 [#footnote]
 ^[1]^ By default, the CloudBees platform associates the artifact version with the code commit associated with the workflow run in the workflow's repository/branch. 
 If a different commit/repository/branch has been checked out for building the artifact, specify that commit ID instead.
@@ -103,7 +104,7 @@ jobs:
 
 The following example accesses the `artifact-id` value downstream using the `outputs` link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/dsl-syntax/contexts[context].
 
-[source,yaml]
+[source,yaml,role="default-expanded"]
 ----
       - name: Checkout
         uses: cloudbees-io/checkout@v1
@@ -119,6 +120,7 @@ The following example accesses the `artifact-id` value downstream using the `out
               shell: sh
               run: |
                 echo "artifact ID for myApp:${{ cloudbees.version }} is: ${{ steps.outputs.artifact-id)}}"
+----
 
 === Using optional inputs
 
