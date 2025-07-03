@@ -102,24 +102,24 @@ jobs:
 
 === Using the action output
 
-The following example accesses the `artifact-id` value downstream using the `outputs` link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/dsl-syntax/contexts[context].
+The following example accesses the `artifact-id` value in a downstream step using the `outputs` link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/dsl-syntax/contexts[context].
 
 [source,yaml,role="default-expanded"]
 ----
       - name: Checkout
         uses: cloudbees-io/checkout@v1
-        id: checkout
       - name: Register an artifact with the platform
+        id: register
         uses: cloudbees-io/register-build-artifact@v1
         with:
           name: "myApp"
           url: "docker.io/myapp/myimg:1.0.0"
           version: "1.0.0"
       - name: Print output parameter artifact ID
-              uses: docker://alpine:latest
-              shell: sh
-              run: |
-                echo "artifact ID for myApp:${{ cloudbees.version }} is: ${{ steps.outputs.artifact-id)}}"
+         uses: docker://alpine:latest
+         shell: sh
+         run: |
+           echo "artifact ID for myApp:${{ cloudbees.version }} is: ${{ steps.register.outputs.artifact-id }}"     
 ----
 
 === Using optional inputs
@@ -142,7 +142,7 @@ jobs:
 === Full workflow example
 
 The following workflow example uses the action to register a build artifact to the platform.
-Then it link:https://github.com/cloudbees-io/register-deployed-artifact[deploys the artifact] to the Docker `test` target environment and link:https://github.com/cloudbees-io/publish-evidence-item[publishes evidence] to the platform.
+Then it prints the artifact ID output parameter.
 
 .Example platform workflow YAML file
 [.collapsible]
@@ -153,69 +153,28 @@ Then it link:https://github.com/cloudbees-io/register-deployed-artifact[deploys 
 apiVersion: automation.cloudbees.io/v1alpha1
 kind: workflow
 name: My workflow
+
 on:
   workflow_dispatch:
-permissions:
-  scm-token-own: read
-  scm-token-org: read
-  id-token: write
+
 jobs:
   build:
     steps:
-      - name: Get source code
+      - name: Checkout
         uses: cloudbees-io/checkout@v1
-      - id: build-go-binary
-        name: Build Go binary
-        uses: docker://golang:latest
-        run: |
-          go build -a -ldflags '-w -extldflags \"-static\"'
-        env:
-          CGO_ENABLED: "0"
-          GOOS: linux
-          GOARCH: amd64
-
-      - id: authenticate-ghcr
-        name: Authenticate to GitHub cloud repository
-        uses: cloudbees-io/configure-oci-credentials@v1
-        with:
-          registry: ghcr.io
-          username: MyUsername
-          password: ${{ secrets.MY_PAT }}
-
-      - id: build-container
-        name: Build container image
-        uses: cloudbees-io/kaniko@v1
-        with:
-          dockerfile: Dockerfile
-          destination: ghcr.io/MyUsername/myImage:latest
-
-      - name: Register build artifacts
+        id: checkout
+      - name: Register an artifact with the platform
         uses: cloudbees-io/register-build-artifact@v1
+        id: register
         with:
-          name: MyImage
-          version: 1.0.0
-          url: "ghcr.io/MyUsername/myImage:latest"
-          repository-url: ${{ steps.checkout.outputs.repository-url }}
-          commit: ${{ steps.checkout.outputs.commit }}
-          commit-url: ${{ steps.checkout.outputs.commit-url }}
-          ref: ${{ steps.checkout.outputs.ref }}
-          labels: "for testing, not-production"
-  deploy:
-    steps:
-      - uses: cloudbees-io/register-deployed-artifact@v1
-        with:
-          name: MyImage
-          version: ${{ cloudbees.version }}
-          url: ghcr.io/MyUsername/myImage:${{ cloudbees.version }}
-          target-environment: test
-    needs: build
-  publish-evidence:
-    steps:
-      - name: Publish evidence
-        with:
-          content: This is evidence
-        uses: cloudbees-io/publish-evidence-item@v1
-    needs: deploy
+          name: "myApp"
+          url: "docker.io/myapp/myimg:1.0.0"
+          version: "1.0.0"
+      - name: Print output parameter artifact ID
+        uses: docker://alpine:latest
+        shell: sh
+        run: |
+          echo "artifact ID for myApp:${{ cloudbees.version }} is: ${{ steps.register.outputs.artifact-id }}"
 
 ----
 --
