@@ -53,7 +53,7 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 
 | `digest`
 | String
-| No, but recommended in order to track artifact versions across repositories in the link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/workflows/artifacts#history[History].
+| No, but recommended in order to track artifact versions across repositories in the link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/workflows/artifacts#history[history].
 | The hash or checksum that uniquely identifies the artifact version.
 
 | `labels`
