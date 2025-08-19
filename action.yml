@@ -21,10 +21,11 @@ inputs:
     description: "The clone URL of the repository."
   commit:
     description: "The commit ID from the source repository."
-  commit-url:
-    description: "The commit URL from the source repository."
   ref:
     description: "The ref or branch of the checked-out repository."
+  no-commit:
+    description: "Do not use the default commit if it is not supplied. Default false."
+    default: 'false'
 
 outputs:
   artifact-id:
@@ -48,7 +49,6 @@ runs:
           echo ',  "commit" : {' >> /tmp/payload.json
           echo '    "repositoryUrl": "'"$INPUT_REPOSITORY_URL"'",' >> /tmp/payload.json
           echo '    "commitId": "'"$INPUT_COMMIT"'",' >> /tmp/payload.json
-          echo '    "commitUrl": "'"$INPUT_COMMIT_URL"'",' >> /tmp/payload.json
           echo '    "ref": "'"$INPUT_REF"'"' >> /tmp/payload.json
           echo '  }' >> /tmp/payload.json
         fi
@@ -57,6 +57,12 @@ runs:
         if [ -n "$INPUT_DIGEST" ]; 
         then
           echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
+        fi
+
+        # Add the no_commit parameter if provided
+        if [ -n "$INPUT_NO_COMMIT" ]; 
+        then
+          echo ', "ignore_default_commit": "'"$INPUT_NO_COMMIT"'"' >> /tmp/payload.json
         fi
         
         # Add the labels parameter if provided
@@ -107,8 +113,8 @@ runs:
         INPUT_LABELS: ${{ inputs.labels }}
         INPUT_REPOSITORY_URL: ${{ inputs.repository-url }}
         INPUT_COMMIT: ${{ inputs.commit }}
-        INPUT_COMMIT_URL: ${{ inputs.commit-url }}
         INPUT_REF: ${{ inputs.ref }}
+        INPUT_NO_COMMIT: ${{ inputs.no-commit }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 

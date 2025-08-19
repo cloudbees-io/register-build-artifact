@@ -36,11 +36,6 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 | Only required if a different repository/branch.^<<footnote,[1]>>^
 | The commit ID from the source repository.
 
-| `commit-url`
-| String
-| Only required if a different repository/branch.^<<footnote,[1]>>^
-| The commit URL from the source repository.
-
 | `ref`
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
@@ -50,6 +45,11 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
 | The artifact repository URL.
+
+| `no-commit`
+| Boolean
+| No
+| Do not use the default commit if it is not supplied. Default false.
 
 | `digest`
 | String
@@ -137,6 +137,7 @@ jobs:
         url: "docker.io/myapp/myimg:1.0.0"
         digest: "sha256:1234567890abcdef1234567abcdef1234"
         labels: "label1,label2"
+        no-commit: "true"
 ----
 
 === Full workflow example
