@@ -56,13 +56,13 @@ runs:
         # Add the digest parameter if provided
         if [ -n "$INPUT_DIGEST" ]; 
         then
-          echo ', "digest": '$INPUT_DIGEST'' >> /tmp/payload.json
+          echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
         fi
 
         # Add the no_commit parameter if provided
         if [ -n "$INPUT_NO_COMMIT" ]; 
         then
-          echo ', "ignore_default_commit": "'"$INPUT_NO_COMMIT"'"' >> /tmp/payload.json
+          echo ', "ignore_default_commit": '"$INPUT_NO_COMMIT"' >> /tmp/payload.json
         fi
         
         # Add the labels parameter if provided
