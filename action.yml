@@ -56,7 +56,7 @@ runs:
         # Add the digest parameter if provided
         if [ -n "$INPUT_DIGEST" ]; 
         then
-          echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
+          echo ', "digest": '$INPUT_DIGEST'' >> /tmp/payload.json
         fi
 
         # Add the no_commit parameter if provided
