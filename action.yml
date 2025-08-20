@@ -62,7 +62,7 @@ runs:
         # Add the no_commit parameter if provided
         if [ -n "$INPUT_NO_COMMIT" ]; 
         then
-          echo ', "ignore_default_commit": "'"$INPUT_NO_COMMIT"'"' >> /tmp/payload.json
+          echo ', "ignore_default_commit": $INPUT_NO_COMMIT' >> /tmp/payload.json
         fi
         
         # Add the labels parameter if provided
