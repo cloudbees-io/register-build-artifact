@@ -7,7 +7,7 @@ A unique artifact ID is output from using this action.
 [NOTE]
 ====
 
-Do *not* include the `register-build-artifact` action for the same artifact version with *any* of the following actions, as the resulting run would register duplicate artifact entries to CloudBees platform.
+Do not include the `register-build-artifact` action for the same artifact version with any of the following actions, as the resulting run would register duplicate artifact entries to CloudBees platform.
 
 * link:https://github.com/cloudbees-io/ecr-promote-image[Promote an image in Amazon ECR]
 * link:https://github.com/cloudbees-io/s3-upload-object[Store an object on Amazon S3] (if `send-artifact-info: true`)
