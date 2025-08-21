@@ -21,6 +21,7 @@ inputs:
     description: "The clone URL of the repository."
   commit:
     description: "The commit ID from the source repository."
+    default: "This is default"
   ref:
     description: "The ref or branch of the checked-out repository."
   no-commit:
