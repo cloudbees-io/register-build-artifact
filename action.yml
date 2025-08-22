@@ -17,13 +17,18 @@ inputs:
     description: 'The artifact digest that uniquely and immutably identifies the artifact.'
   labels:
     description: 'List of comma-separated labels.'
-  repository-url:
-    description: "The clone URL of the repository."
   commit:
-    description: "The commit ID from the source repository."
-    default: "This is default"
+    description:
+      The commit ID from the source repository, used when registering the build artifact in the CloudBees platform.
+    default: ${{ cloudbees.scm.sha }}
+  repository-url:
+    description: >
+      The clone URL of the source repository, used when registering the build artifact in the CloudBees platform.
+    default: ${{ cloudbees.scm.repositoryUrl }}
   ref:
-    description: "The ref or branch of the checked-out repository."
+    description: >
+      The ref or branch of the source repository, used when registering the build artifact in the CloudBees platform.
+    default: ${{ cloudbees.scm.ref }}
 
 outputs:
   artifact-id:

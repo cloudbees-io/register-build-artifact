@@ -33,18 +33,21 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 
 | `commit`
 | String
-| Only required if a different repository/branch.^<<footnote,[1]>>^
-| The commit ID from the source repository.
-
-| `ref`
-| String
-| Only required if a different repository/branch.^<<footnote,[1]>>^
-| The ref or branch of the artifact repository.
+| No
+| The commit ID from the source repository, used when registering the build artifact in the CloudBees platform.
+Default is `${{ cloudbees.scm.sha }}`.
 
 | `repository-url`
 | String
-| Only required if a different repository/branch.^<<footnote,[1]>>^
-| The artifact repository URL.
+| No
+| The clone URL of the source repository, used when registering the build artifact in the CloudBees platform.
+Default is `${{ cloudbees.scm.repositoryUrl }}`.
+
+| `ref`
+| String
+| No
+| The ref or branch of the source repository, used when registering the build artifact in the CloudBees platform.
+Default is `${{ cloudbees.scm.ref }}`.
 
 | `digest`
 | String
