@@ -24,9 +24,6 @@ inputs:
     default: "This is default"
   ref:
     description: "The ref or branch of the checked-out repository."
-  no-commit:
-    description: "Do not use the default commit if it is not supplied. Default false."
-    default: 'false'
 
 outputs:
   artifact-id:
@@ -60,12 +57,6 @@ runs:
           echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
         fi
 
-        # Add the no_commit parameter if provided
-        if [ -n "$INPUT_NO_COMMIT" ]; 
-        then
-          echo ', "ignore_default_commit": '$INPUT_NO_COMMIT >> /tmp/payload.json
-        fi
-        
         # Add the labels parameter if provided
         if [ -n "$INPUT_LABELS" ]; 
         then
@@ -115,7 +106,6 @@ runs:
         INPUT_REPOSITORY_URL: ${{ inputs.repository-url }}
         INPUT_COMMIT: ${{ inputs.commit }}
         INPUT_REF: ${{ inputs.ref }}
-        INPUT_NO_COMMIT: ${{ inputs.no-commit }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
