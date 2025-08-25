@@ -48,22 +48,20 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 | `commit`
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
-| The commit ID from the source repository.
-
-| `commit-url`
-| String
-| Only required if a different repository/branch.^<<footnote,[1]>>^
-| The commit URL from the source repository.
+| The commit ID from the source repository, used when registering the build artifact in CloudBees platform.
+Default is `${{ cloudbees.scm.sha }}`.
 
 | `ref`
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
-| The ref or branch of the artifact repository.
+|The ref or branch of the source repository, used when registering the build artifact in CloudBees platform.
+Default is `${{ cloudbees.scm.ref }}`.
 
 | `repository-url`
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
-| The artifact repository URL.
+| The clone URL of the source repository, used when registering the build artifact in CloudBees platform.
+Default is `${{ cloudbees.scm.repositoryUrl }}`.
 
 | `digest`
 | String
@@ -78,8 +76,8 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 |===
 
 [#footnote]
-^[1]^ By default, CloudBees platform associates the artifact version with the code commit associated with the workflow run in the workflow's repository/branch. 
-If a different commit/repository/branch has been checked out for building the artifact, specify that commit ID instead.
+^[1]^ By default, this action associates the artifact version with the code commit associated with the workflow run in the workflow's repository/branch.
+If a different commit/repository/branch has been checked out for building the artifact, specify that commit ID instead. If you do not want to associate a commit with this artifact version, specify an empty commit.
 
 == Outputs
 
