@@ -1,8 +1,22 @@
 = CloudBees action: Register a build artifact
 
-Use this action to report to the CloudBees platform that an artifact version has been created from a workflow run.
+Use this action to report to CloudBees platform that an artifact version has been created from a workflow run.
 Register a build artifact to enable traceability, including if a branch and/or repository is checked out that is different from the workflow repository branch.
 A unique artifact ID is output from using this action.
+
+[NOTE]
+====
+
+Do not include the `register-build-artifact` action for the same artifact version with any of the following actions, as the resulting run would register duplicate artifact entries to CloudBees platform.
+
+* link:https://github.com/cloudbees-io/ecr-promote-image[Promote an image in Amazon ECR]
+* link:https://github.com/cloudbees-io/s3-upload-object[Store an object on Amazon S3] (if `send-artifact-info: true`)
+* link:https://github.com/cloudbees-io/crane[Copy Docker images with Crane]
+* link:https://github.com/cloudbees-io/helm-push[Push a Helm chart]
+* link:https://github.com/cloudbees-io/jfrog-artifactory-promote-image[Promote an image from JFrog Artifactory]
+* link:https://github.com/cloudbees-io/jfrog-artifactory-upload-file[Upload a file to JFrog Artifactory] (if `send-artifact-info: true`)
+* link:https://github.com/cloudbees-io/kaniko[Build and publish Docker images with Kaniko]
+====
 
 == Inputs
 
@@ -18,7 +32,7 @@ A unique artifact ID is output from using this action.
 | `name`
 | String
 | Yes
-| The name of the artifact reported to the CloudBees platform.
+| The name of the artifact reported to CloudBees platform.
 
 | `url`
 | String
@@ -29,7 +43,7 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 | `version`
 | String
 | Yes
-| The version of the artifact reported to the CloudBees platform.
+| The version of the artifact reported to CloudBees platform.
 
 | `commit`
 | String
@@ -62,7 +76,7 @@ Default is `${{ cloudbees.scm.ref }}`.
 |===
 
 [#footnote]
-^[1]^ By default, the CloudBees platform associates the artifact version with the code commit associated with the workflow run in the workflow's repository/branch. 
+^[1]^ By default, CloudBees platform associates the artifact version with the code commit associated with the workflow run in the workflow's repository/branch. 
 If a different commit/repository/branch has been checked out for building the artifact, specify that commit ID instead.
 
 == Outputs
@@ -76,7 +90,7 @@ If a different commit/repository/branch has been checked out for building the ar
 
 | `artifact-id`
 | String
-| The unique identifier of the artifact reported to the CloudBees platform.
+| The unique identifier of the artifact reported to CloudBees platform.
 |===
 
 
@@ -139,7 +153,7 @@ jobs:
 
 === Full workflow example
 
-The following workflow example uses the action to register a build artifact to the platform.
+The following workflow example uses the action to register a build artifact to CloudBees platform.
 Then it prints the artifact ID output parameter.
 
 .Example platform workflow YAML file
@@ -185,4 +199,4 @@ link:https://opensource.org/license/mit/[MIT license].
 == References
 
 * Learn more about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform-actions/latest/[using actions in CloudBees workflows].
-* Learn about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform/latest/[the CloudBees platform].
+* Learn about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform/latest/[CloudBees platform].
