@@ -77,7 +77,7 @@ runs:
         
         # Make Platform API call to create artifact_info record
         response=$(curl --silent --show-error --fail-with-body \
-          -X 'POST' "$URL/v2/workflows/runs/artifactinfos" \
+          -X 'POST' "$URL/v3/artifactinfos" \
           -H "Authorization: Bearer $JWT" \
           -H 'Content-Type: application/json' \
           --data-binary '@/tmp/payload.json') || command_failed=1
