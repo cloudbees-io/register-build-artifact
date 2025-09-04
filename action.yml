@@ -76,7 +76,7 @@ runs:
         python3 -m json.tool /tmp/payload.json
         
         # Make Platform API call to create artifact_info record
-        response=$(curl --silent --show-error --fail-with-body \
+        response=$(curl --retry-delay 5 --retry 3 --retry-connrefused --silent --show-error --fail-with-body \
           -X 'POST' "$URL/v3/artifactinfos" \
           -H "Authorization: Bearer $JWT" \
           -H 'Content-Type: application/json' \
