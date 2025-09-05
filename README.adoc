@@ -4,6 +4,13 @@ Use this action to report to CloudBees platform that an artifact version has bee
 Register a build artifact to enable traceability, including if a branch and/or repository is checked out that is different from the workflow repository branch.
 A unique artifact ID is output from using this action.
 
+[IMPORTANT]
+====
+This action version (v2.0) is the most recent release of the action.
+Previous link:https://github.com/cloudbees-io/register-build-artifact/releases[releases] are deprecated.
+Version 2.0 link:https://github.com/cloudbees-io/register-build-artifact/releases/v2[removes commit_url].
+====
+
 [NOTE]
 ====
 
