@@ -30,7 +30,8 @@ inputs:
       The tag or branch of the source repository, used when registering the build artifact in CloudBees platform.
     default: ${{ cloudbees.scm.ref }}
   component-id:
-    description: 'The unique identifier of the component to which the artifact belongs. If not provided, the artifact will be registered with current component.'
+    description: >
+      The ID of the component to which the artifact belongs. If not provided, the artifact will be registered with the current workflow run's component.
 
 outputs:
   artifact-id:
