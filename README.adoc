@@ -80,6 +80,11 @@ Default is `${{ cloudbees.scm.repositoryUrl }}`.
 | No
 | A comma-separated list of artifact labels.
 
+| `component-id`
+| String
+| No
+| The unique identifier of the component to which the artifact belongs. If not provided, the artifact will be registered with current component.
+
 |===
 
 [#footnote]

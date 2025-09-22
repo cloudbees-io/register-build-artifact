@@ -29,6 +29,8 @@ inputs:
     description: >
       The tag or branch of the source repository, used when registering the build artifact in CloudBees platform.
     default: ${{ cloudbees.scm.ref }}
+  component-id:
+    description: 'The unique identifier of the component to which the artifact belongs. If not provided, the artifact will be registered with current component.'
 
 outputs:
   artifact-id:
@@ -68,6 +70,12 @@ runs:
          # Convert labels to JSON array format
          formatted_labels=$(echo "$INPUT_LABELS" | sed -e 's/[][]//g' | awk -v RS=, -v ORS=, '{ gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, "");  gsub(/\\"/, "\\\\\""); gsub(/"/, "\\\""); printf "\"%s\",", $0 }' | sed 's/,$//' | sed 's/^/[/; s/$/]/')
          echo ', "labels": '"$formatted_labels">> /tmp/payload.json
+        fi
+        
+        # Add the componentId parameter if provided
+        if [ -n "$INPUT_COMPONENT_ID" ];
+        then
+          echo ', "componentId": "'"$INPUT_COMPONENT_ID"'"' >> /tmp/payload.json
         fi
         echo ' }' >> /tmp/payload.json
 
@@ -111,6 +119,7 @@ runs:
         INPUT_REPOSITORY_URL: ${{ inputs.repository-url }}
         INPUT_COMMIT: ${{ inputs.commit }}
         INPUT_REF: ${{ inputs.ref }}
+        $INPUT_COMPONENT_ID: ${{ inputs.component-id }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
