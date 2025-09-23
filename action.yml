@@ -73,7 +73,37 @@ runs:
 
         # Display the generated payload
         echo "Request payload:"
-        python3 -m json.tool /tmp/payload.json
+        #python3 -m json.tool /tmp/payload.json
+        echo "+----------------------+----------------------------------------------------+"
+        printf "| \033[1m%-20s\033[0m | \033[1m%-50s\033[0m |\n" "Parameter" "Value"
+        echo "+----------------------+----------------------------------------------------+"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "runId" "$CLOUDBEES_RUN_ID"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "runAttempt" "$CLOUDBEES_RUN_ATTEMPT"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "name" "$INPUT_NAME"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "url" "$INPUT_URL"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "version" "$INPUT_VERSION"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "digest" "$INPUT_DIGEST"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "commit" "$INPUT_COMMIT"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "repository-url" "$INPUT_REPOSITORY_URL"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "ref" "$INPUT_REF"
+        printf "| \033[1m%-20s\033[0m | %-50s |\n" "digest" "$INPUT_DIGEST"
+        
+        # Join labels as a comma-separated string
+        labels_str="$INPUT_LABELS"
+    
+        # Fold the string at 48 characters
+        folded_labels=$(echo "$labels_str" | fold -s -w 48)
+    
+        first_line=1
+        echo "$folded_labels" | while IFS= read -r line; do
+          if [ $first_line -eq 1 ]; then
+            printf "| \033[1m%-20s\033[0m | %-50s |\n" "labels" "$line"
+            first_line=0
+          else
+            printf "| \033[1m%-20s\033[0m | %-50s |\n" "" "$line"
+          fi
+        done
+        echo "+----------------------+----------------------------------------------------+"        
         
         # Make Platform API call to create artifact_info record
         response=$(curl --retry-delay 5 --retry 3 --retry-connrefused --silent --show-error --fail-with-body \
@@ -81,7 +111,7 @@ runs:
           -H "Authorization: Bearer $JWT" \
           -H 'Content-Type: application/json' \
           --data-binary '@/tmp/payload.json') || command_failed=1
-       
+        
         # Check if the API call failed
         if [ ${command_failed:-0} -eq 1 ];
         then
@@ -93,7 +123,7 @@ runs:
         echo ""
         echo "Platform API success response:"
         echo "$response" | python3 -m json.tool || echo "$response"
-         
+        
         # Extract the artifactId
         id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
         
