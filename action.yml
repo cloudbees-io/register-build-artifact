@@ -120,7 +120,7 @@ runs:
         INPUT_REPOSITORY_URL: ${{ inputs.repository-url }}
         INPUT_COMMIT: ${{ inputs.commit }}
         INPUT_REF: ${{ inputs.ref }}
-        $INPUT_COMPONENT_ID: ${{ inputs.component-id }}
+        INPUT_COMPONENT_ID: ${{ inputs.component-id }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
