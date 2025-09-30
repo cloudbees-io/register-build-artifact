@@ -31,7 +31,7 @@ inputs:
     default: ${{ cloudbees.scm.ref }}
   component-id:
     description: >
-      The ID of the component to which the artifact belongs. If not provided, the artifact will be registered with the current workflow run's component.
+      The ID of the component associated with the artifact. If not provided, the artifact is registered with the component of the current workflow run.
 
 outputs:
   artifact-id:
