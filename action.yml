@@ -32,6 +32,7 @@ inputs:
   component-id:
     description: >
       The ID of the component associated with the artifact. If not provided, the artifact is registered with the component of the current workflow run.
+    default: ${{ cloudbees.component.id }}
 
 outputs:
   artifact-id:
