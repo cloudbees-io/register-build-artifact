@@ -45,11 +45,14 @@ runs:
       name: Register Build Artifact
       uses: docker://esolang/jq:latest
       run: |
-        # Helper function to fold and print a param name and value 
+        # Set the fold width to match the table column width
+        FOLD_WIDTH=48
+        
+        # Helper function to fold and print a parameter name and value 
         fold_and_print() {
           local pName="$1"
           local pValue="$2"
-          folded=$(echo "$pValue" | fold -s -w 48)
+          folded=$(echo "$pValue" | fold -s -w $FOLD_WIDTH)
           first=1
           echo "$folded" | while IFS= read -r line; do
             if [ $first -eq 1 ]; then
@@ -116,7 +119,6 @@ runs:
 
         # Display the generated payload
         echo "Request payload:"
-        #python3 -m json.tool /tmp/payload.json
         print_inputs
         
         # Make Platform API call to create artifact_info record
