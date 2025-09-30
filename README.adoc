@@ -83,7 +83,7 @@ Default is `${{ cloudbees.scm.repositoryUrl }}`.
 | `component-id`
 | String
 | No
-| The link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/organizations-components/components#component-id[ID of the component] to which the artifact belongs. If not provided, the artifact will be registered with the current workflow run's component.
+| The link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/organizations-components/components#component-id[ID of the component] associated with the artifact. If not provided, the artifact is registered with the component of the current workflow run. Default is `${{ cloudbees.component.id }}`
 
 |===
 
