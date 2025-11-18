@@ -139,7 +139,7 @@ runs:
         # If successful, show the response nicely
         echo ""
         echo "CloudBees Unify API success response:"
-        echo "$response" | jq || echo "$response"
+        echo $response | jq || echo $response
         
         # Extract the artifactId
         id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
