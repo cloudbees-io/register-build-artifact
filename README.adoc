@@ -1,6 +1,6 @@
 = CloudBees action: Register a build artifact
 
-Use this action to report to CloudBees platform that an artifact version has been created from a workflow run.
+Use this action to report to CloudBees Unify that an artifact version has been created from a workflow run.
 Register a build artifact to enable traceability, including if a branch and/or repository is checked out that is different from the workflow repository branch.
 A unique artifact ID is output from using this action.
 
@@ -14,7 +14,7 @@ Version 2.0 link:https://github.com/cloudbees-io/register-build-artifact/release
 [NOTE]
 ====
 
-Do not include the `register-build-artifact` action for the same artifact version with any of the following actions, as the resulting run would register duplicate artifact entries to CloudBees platform.
+Do not include the `register-build-artifact` action for the same artifact version with any of the following actions, as the resulting run would register duplicate artifact entries to CloudBees Unify.
 
 * link:https://github.com/cloudbees-io/ecr-promote-image[Promote an image in Amazon ECR]
 * link:https://github.com/cloudbees-io/s3-upload-object[Store an object on Amazon S3] (if `send-artifact-info: true`)
@@ -39,7 +39,7 @@ Do not include the `register-build-artifact` action for the same artifact versio
 | `name`
 | String
 | Yes
-| The name of the artifact reported to CloudBees platform.
+| The name of the artifact reported to CloudBees Unify.
 
 | `url`
 | String
@@ -50,24 +50,24 @@ For example, `docker.io/myapp/myimg:1.0.0`.
 | `version`
 | String
 | Yes
-| The version of the artifact reported to CloudBees platform.
+| The version of the artifact reported to CloudBees Unify.
 
 | `commit`
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
-| The commit ID from the source repository, used when registering the build artifact in CloudBees platform.
+| The commit ID from the source repository, used when registering the build artifact in CloudBees Unify.
 Default is `${{ cloudbees.scm.sha }}`.
 
 | `ref`
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
-|The tag or branch of the source repository, used when registering the build artifact in CloudBees platform.
+|The tag or branch of the source repository, used when registering the build artifact in CloudBees Unify.
 Default is `${{ cloudbees.scm.ref }}`.
 
 | `repository-url`
 | String
 | Only required if a different repository/branch.^<<footnote,[1]>>^
-| The clone URL of the source repository, used when registering the build artifact in CloudBees platform.
+| The clone URL of the source repository, used when registering the build artifact in CloudBees Unify.
 Default is `${{ cloudbees.scm.repositoryUrl }}`.
 
 | `digest`
@@ -102,7 +102,7 @@ If a different commit/repository/branch has been checked out for building the ar
 
 | `artifact-id`
 | String
-| The unique identifier of the artifact reported to CloudBees platform.
+| The unique identifier of the artifact reported to CloudBees Unify.
 |===
 
 
@@ -132,7 +132,7 @@ The following example accesses the `artifact-id` value in a downstream step usin
 ----
       - name: Checkout
         uses: cloudbees-io/checkout@v1
-      - name: Register an artifact with the platform
+      - name: Register an artifact with the CloudBees Unify
         id: register
         uses: cloudbees-io/register-build-artifact@v1
         with:
@@ -165,10 +165,10 @@ jobs:
 
 === Full workflow example
 
-The following workflow example uses the action to register a build artifact to CloudBees platform.
+The following workflow example uses the action to register a build artifact to CloudBees Unify.
 Then it prints the artifact ID output parameter.
 
-.Example platform workflow YAML file
+.Example CloudBees Unify workflow YAML file
 [.collapsible]
 --
 
@@ -187,7 +187,7 @@ jobs:
       - name: Checkout
         uses: cloudbees-io/checkout@v1
         id: checkout
-      - name: Register an artifact with the platform
+      - name: Register an artifact with the CloudBees Unify
         uses: cloudbees-io/register-build-artifact@v1
         id: register
         with:
@@ -211,4 +211,4 @@ link:https://opensource.org/license/mit/[MIT license].
 == References
 
 * Learn more about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform-actions/latest/[using actions in CloudBees workflows].
-* Learn about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform/latest/[CloudBees platform].
+* Learn about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform/latest/[CloudBees Unify].

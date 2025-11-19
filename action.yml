@@ -19,15 +19,15 @@ inputs:
     description: 'List of comma-separated labels.'
   commit:
     description:
-      The commit ID from the source repository, used when registering the build artifact in CloudBees platform.
+      The commit ID from the source repository, used when registering the build artifact in CloudBees Unify.
     default: ${{ cloudbees.scm.sha }}
   repository-url:
     description: >
-      The clone URL of the source repository, used when registering the build artifact in CloudBees platform.
+      The clone URL of the source repository, used when registering the build artifact in CloudBees Unify.
     default: ${{ cloudbees.scm.repositoryUrl }}
   ref:
     description: >
-      The tag or branch of the source repository, used when registering the build artifact in CloudBees platform.
+      The tag or branch of the source repository, used when registering the build artifact in CloudBees Unify.
     default: ${{ cloudbees.scm.ref }}
   component-id:
     description: >
@@ -121,8 +121,8 @@ runs:
         echo "Request payload:"
         print_inputs
         
-        # Make Platform API call to create artifact_info record
-        response=$(curl --retry-delay 5 --retry 3 --retry-connrefused --silent --show-error --fail-with-body \
+        # Make CloudBees Unify API call to create artifact_info record
+        response=$(curl --retry 5 --retry-delay 10 --retry-all-errors --silent --show-error --fail-with-body \
           -X 'POST' "$URL/v3/artifactinfos" \
           -H "Authorization: Bearer $JWT" \
           -H 'Content-Type: application/json' \
@@ -131,14 +131,14 @@ runs:
         # Check if the API call failed
         if [ ${command_failed:-0} -eq 1 ];
         then
-          echo "Platform API call failed with error: '$response'"
+          echo "CloudBees Unify API call failed with error: $response"
           exit 1
         fi
         
         # If successful, show the response nicely
         echo ""
-        echo "Platform API success response:"
-        echo "$response" | python3 -m json.tool || echo "$response"
+        echo "CloudBees Unify API success response:"
+        echo "$response" | /usr/bin/jq || echo "$response"
         
         # Extract the artifactId
         id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
