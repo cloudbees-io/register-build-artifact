@@ -161,3 +161,11 @@ runs:
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
+    - id: publish-evidence
+      name: Publish Artifact Evidence
+      uses: cloudbees-io/publish-evidence-item@v1
+      with:
+        content: |-
+          ## Test markup and property rendering
+          - Run ID: ${{ cloudbees.run_id }}
+
