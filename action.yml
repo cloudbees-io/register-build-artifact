@@ -87,7 +87,7 @@ runs:
         
         registered_ids=()
         # Split the input string url by comma separator to use them in loop to register multiple artifacts
-        IFS=',' read -ra URLS <<< "$INPUT_URLS"
+        IFS=',' read -ra URLS <<< "$INPUT_URL"
         for inputUrl in "${URLS[@]}"; do
           inputUrl=$(echo "$inputUrl" | xargs)  # Trim whitespace
                   
