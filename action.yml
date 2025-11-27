@@ -151,13 +151,13 @@ runs:
           # Extract the artifactId
           id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
           
-          registered_ids_json=$(jq --arg k "$inputUrl" --arg v "$id" '. + {($k): $v}' <<< "$registered_ids_json")
+          registered_ids_json=$(echo "$registered_ids_json" | /usr/bin/jq --arg k "$inputUrl" --arg v "$id" '. + {($k): $v}')
         done
         
         # Store outputs if at least one artifact was registered
-        if [ "$(echo "$registered_ids_json" | jq 'length == 0')" = "true" ]; then
+        if [ "$(echo "$registered_ids_json" | /usr/bin/jq 'length == 0')" = "true" ]; then
           # Set the single registered ID as output (the first one if multiple)
-          echo $registered_ids | jq -r 'to_entries[0].value' > $CLOUDBEES_OUTPUTS/artifact-id
+          echo $registered_ids | /usr/bin/jq -r 'to_entries[0].value' > $CLOUDBEES_OUTPUTS/artifact-id
           
           # Set the list of registered IDs as a JSON array output
           echo $registered_ids > $CLOUDBEES_OUTPUTS/artifact-ids
