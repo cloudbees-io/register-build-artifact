@@ -85,11 +85,10 @@ runs:
           echo "+----------------------+----------------------------------------------------+"        
         }
         
-        registered_ids=()
-        # Split the input string url by comma separator to use them in loop to register multiple artifacts
-        IFS=',' read -ra URLS <<< "$INPUT_URL"
-        for inputUrl in "${URLS[@]}"; do
-          inputUrl=$(echo "$inputUrl" | xargs)  # Trim whitespace
+        # Initialize an empty JSON object to hold registered artifact IDs with their URLs
+        registered_ids_json="{}"
+        for item in $(echo "$INPUT_URL" | tr ',' '\n'); do
+          inputUrl=$(echo "$item" | xargs)
                   
           # Create the payload JSON file
           echo '{ "runId": "'"$CLOUDBEES_RUN_ID"'", "runAttempt": "'"$CLOUDBEES_RUN_ATTEMPT"'",' > /tmp/payload.json 
@@ -151,14 +150,18 @@ runs:
           
           # Extract the artifactId
           id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
-          registered_ids+=("$id")
+          
+          registered_ids_json=$(jq --arg k "$inputUrl" --arg v "$id" '. + {($k): $v}' <<< "$registered_ids_json")
         done
         
-        # Set the single registered ID as output (the first one if multiple)
-        printf %s "${registered_ids[0]}" > $CLOUDBEES_OUTPUTS/artifact-id
-        
-        # Set the list of registered IDs as a JSON array output
-        printf '%s\n' "${registered_ids[@]}" | /usr/bin/jq -R . | /usr/bin/jq -s . > $CLOUDBEES_OUTPUTS/artifact-ids
+        # Store outputs if at least one artifact was registered
+        if [ "$(echo "$registered_ids_json" | jq 'length == 0')" = "true" ]; then
+          # Set the single registered ID as output (the first one if multiple)
+          echo $registered_ids | jq -r 'to_entries[0].value' > $CLOUDBEES_OUTPUTS/artifact-id
+          
+          # Set the list of registered IDs as a JSON array output
+          echo $registered_ids > $CLOUDBEES_OUTPUTS/artifact-ids
+        fi
       env:
         JWT: ${{ cloudbees.api.token }}
         URL: ${{ cloudbees.api.url }}
