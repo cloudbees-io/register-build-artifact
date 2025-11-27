@@ -44,7 +44,7 @@ Do not include the `register-build-artifact` action for the same artifact versio
 | `url`
 | String
 | Yes
-| The URL where the artifact version is located.
+| The URL where the artifact version is located. Formatted as a comma-separated list for passing multiple artifacts.
 For example, `docker.io/myapp/myimg:1.0.0`.
 
 | `version`
@@ -102,7 +102,11 @@ If a different commit/repository/branch has been checked out for building the ar
 
 | `artifact-id`
 | String
-| The unique identifier of the artifact reported to CloudBees Unify.
+| The unique identifier of the artifact. If multiple artifacts are registered, this will be the ID of the first one.
+
+| `artifact-ids`
+| JSON string
+| The unique identifiers in JSON format of the artifacts when multiple are registered.
 |===
 
 
