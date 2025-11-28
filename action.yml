@@ -155,12 +155,12 @@ runs:
         done
         
         # Store outputs if at least one artifact was registered
-        if [ "$(echo "$registered_ids_json" | /usr/bin/jq 'length == 0')" = "true" ]; then
+        if [ "$(echo "$registered_ids_json" | /usr/bin/jq 'length > 0')" = "true" ]; then
           # Set the single registered ID as output (the first one if multiple)
-          echo $registered_ids | /usr/bin/jq -r 'to_entries[0].value' > $CLOUDBEES_OUTPUTS/artifact-id
+          echo $registered_ids_json | /usr/bin/jq -r 'to_entries[0].value' > $CLOUDBEES_OUTPUTS/artifact-id
           
           # Set the list of registered IDs as a JSON array output
-          echo $registered_ids > $CLOUDBEES_OUTPUTS/artifact-ids
+          echo $registered_ids_json > $CLOUDBEES_OUTPUTS/artifact-ids
         fi
       env:
         JWT: ${{ cloudbees.api.token }}
