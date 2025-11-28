@@ -196,14 +196,16 @@ jobs:
         id: register
         with:
           name: "myApp"
-          url: "docker.io/myapp/myimg:1.0.0"
+          url: ${{ vars.DOCKER_REGISTRY }}/myApp:${{ cloudbees.version }},${{ vars.DOCKER_REGISTRY2 }}/myApp:${{ cloudbees.version }}
           version: "1.0.0"
-      - name: Print output parameter artifact ID
+      - name: Print artifact ID outputs
         uses: docker://alpine:latest
         shell: sh
         run: |
-          echo "artifact ID for myApp:${{ cloudbees.version }} is: ${{ steps.register.outputs.artifact-id }}"
-
+            echo "Single artifact ID: ${{ steps.register.outputs.artifact-id }}"
+            echo "All artifact IDs (JSON): ${{ steps.register.outputs.artifact-ids }}"
+            echo "Artifact ID for first registry: ${{ fromJSON(steps.register.outputs.artifact-ids)[vars.DOCKER_REGISTRY] }}"
+            echo "Artifact ID for second registry: ${{ fromJSON(steps.register.outputs.artifact-ids)[vars.DOCKER_REGISTRY2] }}"
 ----
 --
 
