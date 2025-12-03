@@ -91,7 +91,7 @@ runs:
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
 
-    - id: registerBuildArtifact
+    - id: register-build-artifact
       name: Register build artifact
       uses: cloudbees-io/register-build-artifacts@main
       with:
@@ -102,5 +102,5 @@ runs:
       uses: docker://esolang/jq:latest
       shell: sh
       run: |
-        artifact_id=$(echo '${{ steps.registerBuildArtifact.outputs.artifact-ids }}' | /usr/bin/jq -r 'to_entries | .[0].value')
+        artifact_id=$(echo '${{ steps.register-build-artifact.outputs.artifact-ids }}' | /usr/bin/jq -r 'to_entries | .[0].value')
         echo $artifact_id > $CLOUDBEES_OUTPUTS/artifact-id
