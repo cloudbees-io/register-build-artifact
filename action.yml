@@ -36,7 +36,7 @@ inputs:
 
 outputs:
   artifact-id:
-    value: ${{ steps.set-output.outputs.artifact-id }}
+    value: ${{ steps.set-artifact-id-output.outputs.artifact-id }}
     description: "The unique identifier of the artifact."
 
 runs:
@@ -98,9 +98,9 @@ runs:
         artifact-metadata: ${{ steps.prepare-payload.outputs.artifact-metadata }}
 
     - name: Set output parameter
-      id: set-output
-      uses: docker://alpine:latest
+      id: set-artifact-id-output
+      uses: docker://esolang/jq:latest
       shell: sh
       run: |
-          echo "TODO" > $CLOUDBEES_OUTPUTS/artifact-id
-
+        artifact_id=$(echo '${{ steps.registerBuildArtifact.outputs.artifact-ids }}' | /usr/bin/jq -r 'to_entries | .[0].value')
+        echo $artifact_id > $CLOUDBEES_OUTPUTS/artifact-id
