@@ -85,6 +85,10 @@ Default is `${{ cloudbees.scm.repositoryUrl }}`.
 | No
 | The link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/organizations-components/components#component-id[ID of the component] associated with the artifact. If not provided, the artifact is registered with the component of the current workflow run. Default is `${{ cloudbees.component.id }}`
 
+| `type`
+| String
+| No
+| The type of artifact, e.g., `docker`, `helm`, `maven`, etc. This field is for display purposes only.
 |===
 
 [#footnote]
@@ -120,7 +124,8 @@ jobs:
       with:
         name: "myApp"
         url: "docker.io/myapp/myimg:1.0.0"
-        version: "1.0.0"
+        version: "1.0.0",
+        type: "docker"
 
 ----
 
