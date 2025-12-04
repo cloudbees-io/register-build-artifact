@@ -79,6 +79,8 @@ Default is `${{ cloudbees.scm.repositoryUrl }}`.
 | String
 | No
 | A comma-separated list of artifact labels.
+[WARNING]
+Label length must not exceed 20 characters.
 
 | `component-id`
 | String
