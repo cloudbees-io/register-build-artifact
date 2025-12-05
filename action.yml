@@ -161,7 +161,7 @@ runs:
 
     - id: register-build-artifact
       name: Register build artifact
-      uses: cloudbees-io/register-build-artifacts@add-type-argument
+      uses: cloudbees-io/register-build-artifacts@v1
       with:
         artifact-metadata: ${{ steps.prepare-payload.outputs.artifact-metadata }}
 
