@@ -33,118 +33,115 @@ inputs:
     description: >
       The ID of the component associated with the artifact. If not provided, the artifact is registered with the component of the current workflow run.
     default: ${{ cloudbees.component.id }}
+  type:
+    description: 'The type of the artifact (e.g., docker, maven, npm). This field is for display purposes only.'
 
 outputs:
   artifact-id:
-    value: ${{ steps.registerBuildArtifact.outputs.artifact-id }}
+    value: ${{ steps.set-artifact-id-output.outputs.artifact-id }}
     description: "The unique identifier of the artifact."
 
 runs:
   using: composite
   steps:
-    - id: registerBuildArtifact
-      name: Register Build Artifact
-      uses: docker://esolang/jq:latest
+    - id: prepare-payload
+      name: Prepare Artifact Metadata Payload
+      uses: docker://alpine:3.18
       run: |
-        # Set the fold width to match the table column width
-        FOLD_WIDTH=48
-        
-        # Helper function to fold and print a parameter name and value 
-        fold_and_print() {
-          local pName="$1"
-          local pValue="$2"
-          folded=$(echo "$pValue" | fold -s -w $FOLD_WIDTH)
-          first=1
-          echo "$folded" | while IFS= read -r line; do
-            if [ $first -eq 1 ]; then
-              printf "| \033[1m%-20s\033[0m | %-50s |\n" "$pName" "$line"
-              first=0
-            else
-              printf "| \033[1m%-20s\033[0m | %-50s |\n" "" "$line"
+        parse_labels_to_json() {
+          input="$1"
+          labels_json="["
+          field=""
+          in_quotes=0
+          escape=0
+
+          i=1
+          len=${#input}
+
+          add_field() {
+            f=$1
+            # Trim leading/trailing spaces
+            f=$(echo "$f" | sed 's/^ *//;s/ *$//')
+            # JSON-escape: backslash and quotes
+            f=$(printf '%s' "$f" | sed 's/\\/\\\\/g; s/"/\\"/g')
+            # Add to JSON array
+            if [ "$labels_json" != "[" ]; then
+              labels_json="$labels_json, "
             fi
+            labels_json="$labels_json\"$f\""
+          }
+
+          while [ $i -le $len ]; do
+            c=$(printf '%s' "$input" | cut -c $i)
+            if [ "$escape" -eq 1 ]; then
+              field="$field$c"
+              escape=0
+            elif [ "$c" = "\\" ]; then
+              escape=1
+            elif [ "$c" = '"' ]; then
+              in_quotes=$((1-in_quotes))
+              field="$field$c"
+            elif [ "$c" = "," ] && [ "$in_quotes" -eq 0 ]; then
+              add_field "$field"
+              field=""
+              # Skip spaces/tabs after comma
+              while [ $i -lt $len ]; do
+                n=$(printf '%s' "$input" | cut -c $((i+1)))
+                  case "$n" in
+                    " " | "	") i=$((i+1));;
+                    *) break;;
+                esac
+              done
+            else
+              field="$field$c"
+            fi
+
+            i=$((i+1))
           done
+
+          # Add the last field
+          add_field "$field"
+
+          labels_json="$labels_json]"
+          # Final output
+          echo "$labels_json"
         }
         
-        # Function to print inputs in a formatted table
-        print_inputs() {
-          echo "+----------------------+----------------------------------------------------+"
-          printf "| \033[1m%-20s\033[0m | \033[1m%-50s\033[0m |\n" "Parameter" "Value"
-          echo "+----------------------+----------------------------------------------------+"
-          printf "| \033[1m%-20s\033[0m | %-50s |\n" "name" "$INPUT_NAME"
-          fold_and_print "url" "$INPUT_URL"
-          printf "| \033[1m%-20s\033[0m | %-50s |\n" "version" "$INPUT_VERSION"
-          fold_and_print "digest" "$INPUT_DIGEST"
-          printf "| \033[1m%-20s\033[0m | %-50s |\n" "component-id" "$INPUT_COMPONENT_ID"
-          printf "| \033[1m%-20s\033[0m | %-50s |\n" "commit" "$INPUT_COMMIT"
-          printf "| \033[1m%-20s\033[0m | %-50s |\n" "repository-url" "$INPUT_REPOSITORY_URL"
-          printf "| \033[1m%-20s\033[0m | %-50s |\n" "ref" "$INPUT_REF"
-          fold_and_print "labels" "$INPUT_LABELS"
-          echo "+----------------------+----------------------------------------------------+"        
-        }
+        # Create the JSON payload
+        payload='[{ "name": "'"$INPUT_NAME"'", "url": "'"$INPUT_URL"'", "version": "'"$INPUT_VERSION"'"'
         
-        # Create the payload JSON file
-        echo '{ "runId": "'"$CLOUDBEES_RUN_ID"'", "runAttempt": "'"$CLOUDBEES_RUN_ATTEMPT"'",' > /tmp/payload.json 
-        echo '"name": "'"$INPUT_NAME"'", "url": "'"$INPUT_URL"'", "version": "'"$INPUT_VERSION"'" ' >> /tmp/payload.json
-
-         # Add the commit info if commit sha is provided
-        if [ -n "$INPUT_COMMIT" ];
-        then       
-          echo ',  "commit" : {' >> /tmp/payload.json
-          echo '    "repositoryUrl": "'"$INPUT_REPOSITORY_URL"'",' >> /tmp/payload.json
-          echo '    "commitId": "'"$INPUT_COMMIT"'",' >> /tmp/payload.json
-          echo '    "ref": "'"$INPUT_REF"'"' >> /tmp/payload.json
-          echo '  }' >> /tmp/payload.json
-        fi
-
-        # Add the digest parameter if provided
-        if [ -n "$INPUT_DIGEST" ]; 
-        then
-          echo ', "digest": "'"$INPUT_DIGEST"'"' >> /tmp/payload.json
-        fi
-
-        # Add the labels parameter if provided
-        if [ -n "$INPUT_LABELS" ]; 
-        then
-         # Convert labels to JSON array format
-         formatted_labels=$(echo "$INPUT_LABELS" | sed -e 's/[][]//g' | awk -v RS=, -v ORS=, '{ gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, "");  gsub(/\\"/, "\\\\\""); gsub(/"/, "\\\""); printf "\"%s\",", $0 }' | sed 's/,$//' | sed 's/^/[/; s/$/]/')
-         echo ', "labels": '"$formatted_labels">> /tmp/payload.json
+        # Add commit info if available
+        if [ -n "$INPUT_COMMIT" ]; then
+            payload="$payload, \"repositoryUrl\": \"$INPUT_REPOSITORY_URL\","
+            payload="$payload \"commit\": \"$INPUT_COMMIT\","
+            payload="$payload \"ref\": \"$INPUT_REF\""
         fi
         
-        # Add the componentId parameter if provided
-        if [ -n "$INPUT_COMPONENT_ID" ];
-        then
-          echo ', "componentId": "'"$INPUT_COMPONENT_ID"'"' >> /tmp/payload.json
+        # Add digest if available
+        if [ -n "$INPUT_DIGEST" ]; then
+          payload="$payload, \"digest\": \"$INPUT_DIGEST\""
         fi
-        echo ' }' >> /tmp/payload.json
-
-        # Display the generated payload
-        echo "Request payload:"
-        print_inputs
-        
-        # Make CloudBees Unify API call to create artifact_info record
-        response=$(curl --retry 5 --retry-delay 10 --retry-all-errors --silent --show-error --fail-with-body \
-          -X 'POST' "$URL/v3/artifactinfos" \
-          -H "Authorization: Bearer $JWT" \
-          -H 'Content-Type: application/json' \
-          --data-binary '@/tmp/payload.json') || command_failed=1
-        
-        # Check if the API call failed
-        if [ ${command_failed:-0} -eq 1 ];
-        then
-          echo "CloudBees Unify API call failed with error: $response"
-          exit 1
+          
+        # Add labels if available
+        if [ -n "$INPUT_LABELS" ]; then
+          escaped_labels=$(parse_labels_to_json "$INPUT_LABELS")
+          payload="$payload, \"labels\": $escaped_labels"
+        fi
+          
+        # Add componentId if available
+        if [ -n "$INPUT_COMPONENT_ID" ]; then
+          payload="$payload, \"componentId\": \"$INPUT_COMPONENT_ID\""
         fi
         
-        # If successful, show the response nicely
-        echo ""
-        echo "CloudBees Unify API success response:"
-        echo "$response" | /usr/bin/jq || echo "$response"
+        # Add type if available
+        if [ -n "$INPUT_TYPE" ]; then
+          payload="$payload, \"type\": \"$INPUT_TYPE\""
+        fi
+          
+        payload="$payload }]"
         
-        # Extract the artifactId
-        id=$(echo "$response" | grep -o '"id": *"[^"]*"' | sed 's/.*"id": *"\([^"]*\)".*/\1/')
-        
-        # Set it as an output
-        printf %s "$id" > $CLOUDBEES_OUTPUTS/artifact-id
+        # Store the final payload in output
+        echo $payload > $CLOUDBEES_OUTPUTS/artifact-metadata
 
       env:
         JWT: ${{ cloudbees.api.token }}
@@ -160,4 +157,18 @@ runs:
         INPUT_COMPONENT_ID: ${{ inputs.component-id }}
         CLOUDBEES_RUN_ID: ${{ cloudbees.run_id }}
         CLOUDBEES_RUN_ATTEMPT: ${{ cloudbees.run_attempt }}
+        INPUT_TYPE: ${{ inputs.type }}
 
+    - id: register-build-artifact
+      name: Register build artifact
+      uses: cloudbees-io/register-build-artifacts@v1
+      with:
+        artifact-metadata: ${{ steps.prepare-payload.outputs.artifact-metadata }}
+
+    - name: Set output parameter
+      id: set-artifact-id-output
+      uses: docker://esolang/jq:latest
+      shell: sh
+      run: |
+        artifact_id=$(echo '${{ steps.register-build-artifact.outputs.artifact-ids }}' | /usr/bin/jq -r 'to_entries | .[0].value')
+        echo $artifact_id > $CLOUDBEES_OUTPUTS/artifact-id

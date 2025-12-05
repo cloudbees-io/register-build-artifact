@@ -79,12 +79,18 @@ Default is `${{ cloudbees.scm.repositoryUrl }}`.
 | String
 | No
 | A comma-separated list of artifact labels.
+[WARNING]
+Label length must not exceed 20 characters.
 
 | `component-id`
 | String
 | No
 | The link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/organizations-components/components#component-id[ID of the component] associated with the artifact. If not provided, the artifact is registered with the component of the current workflow run. Default is `${{ cloudbees.component.id }}`
 
+| `type`
+| String
+| No
+| The type of artifact, e.g., `docker`, `helm`, `maven`, etc. This field is for display purposes only.
 |===
 
 [#footnote]
@@ -116,11 +122,12 @@ The following is a basic example of using the action:
 ----
 jobs:
   register_build_artifact:
-      uses: cloudbees-io/register-build-artifact@v1
+      uses: cloudbees-io/register-build-artifact@v2
       with:
         name: "myApp"
         url: "docker.io/myapp/myimg:1.0.0"
-        version: "1.0.0"
+        version: "1.0.0",
+        type: "docker"
 
 ----
 
@@ -134,7 +141,7 @@ The following example accesses the `artifact-id` value in a downstream step usin
         uses: cloudbees-io/checkout@v1
       - name: Register an artifact with the CloudBees Unify
         id: register
-        uses: cloudbees-io/register-build-artifact@v1
+        uses: cloudbees-io/register-build-artifact@v2
         with:
           name: "myApp"
           url: "docker.io/myapp/myimg:1.0.0"
@@ -154,7 +161,7 @@ The following example specifies the artifact digest and labels:
 ----
 jobs:
   register_build_artifact:
-      uses: https://github.com/cloudbees-io/register-build-artifact@v1
+      uses: https://github.com/cloudbees-io/register-build-artifact@v2
       with:
         name: "myApp"
         version: "1.0.0"
@@ -188,7 +195,7 @@ jobs:
         uses: cloudbees-io/checkout@v1
         id: checkout
       - name: Register an artifact with the CloudBees Unify
-        uses: cloudbees-io/register-build-artifact@v1
+        uses: cloudbees-io/register-build-artifact@v2
         id: register
         with:
           name: "myApp"
