@@ -25,8 +25,8 @@ jobs:
         name: Test output parameter does not contain EOL
         shell: sh
         run: |
-          artifactID="${{ steps.artifactIdOutput.outputs.artifact-id }}"
-          if [[ $artifactID == *$'\n' ]]; 
+          echo "output parameter is '${{ steps.artifactIdOutput.outputs.artifact-id }}'"
+          if [[ "${{ steps.artifactIdOutput.outputs.artifact-id }}" == *$'\n'* ]]; 
           then
             echo "ERROR: Output parameter 'artifact-id' contains EOL!"
             exit 1
