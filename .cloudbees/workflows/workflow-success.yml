@@ -21,4 +21,18 @@ jobs:
           repository_url: "https://github.com/cloudbees-io/checkout"
           ref: "refs/heads/main"
       - name: Artifact Id output
+        id: artifactIdOutput
         uses: cloudbees-io/register-build-artifact@v1
+      - uses: docker://alpine
+        name: Test output parameter does not contain EOL
+        shell: sh
+        run: |
+          artifactID="${{ steps.artifactIdOutput.outputs.artifact-id }}"
+          if [[ $artifactID == *$'\n' ]]; 
+          then
+            echo "ERROR: Output parameter 'artifact-id' contains EOL!"
+            exit 1
+          else
+            echo "OK: Output parameter 'artifact-id' does not contain EOL."
+            exit 0
+          fi
