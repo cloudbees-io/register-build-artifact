@@ -177,3 +177,4 @@ runs:
         echo "BEFORE"
         cat $CLOUDBEES_OUTPUTS/artifact-id
         echo "AFTER"
+        echo "artifact id output is '${{ steps.set-artifact-id-output.outputs.artifact-id }}'"
