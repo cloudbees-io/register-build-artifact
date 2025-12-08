@@ -173,7 +173,7 @@ runs:
         echo "steps.register-build-artifact.outputs.artifact-ids is '${{ steps.register-build-artifact.outputs.artifact-ids }}'"
         artifact_id=$(echo '${{ steps.register-build-artifact.outputs.artifact-ids }}' | /usr/bin/jq -r 'to_entries | .[0].value')
         echo "Artifact id is '$artifact_id'"
-        echo $artifact_id > $CLOUDBEES_OUTPUTS/artifact-id
+        echo -n $artifact_id > $CLOUDBEES_OUTPUTS/artifact-id
         echo "BEFORE"
         cat $CLOUDBEES_OUTPUTS/artifact-id
         echo "AFTER"
