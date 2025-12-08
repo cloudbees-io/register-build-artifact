@@ -177,4 +177,10 @@ runs:
         echo "BEFORE"
         cat $CLOUDBEES_OUTPUTS/artifact-id
         echo "AFTER"
+        
+    - name: Test echo
+      id: test-echo
+      uses: docker://alpine
+      shell: sh
+      run: |
         echo "artifact id output is '${{ steps.set-artifact-id-output.outputs.artifact-id }}'"
