@@ -167,8 +167,8 @@ runs:
 
     - name: Set output parameter
       id: set-artifact-id-output
-      uses: docker://esolang/jq:latest
+      uses: docker://public.ecr.aws/l7o7z1g8/actions/cb-utils:main-0.1.9
       shell: sh
       run: |
-        artifact_id=$(echo '${{ steps.register-build-artifact.outputs.artifact-ids }}' | /usr/bin/jq -r 'to_entries | .[0].value')
+        artifact_id=$(echo '${{ steps.register-build-artifact.outputs.artifact-ids }}' | jq -r 'to_entries | .[0].value')
         echo -n $artifact_id > $CLOUDBEES_OUTPUTS/artifact-id
